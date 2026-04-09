@@ -1218,26 +1218,43 @@ function removeTyping(){
   if(t) t.remove();
 }
 
-function sendMessage(){
-  var text = input.value.trim();
-  if(!text) return;
-  input.value = '';
-  sendBtn.disabled = true;
-  input.disabled = true;
+function getOrCreateSessionId(){
+  var sid=sessionStorage.getItem('slate_session');
+  if(!sid){sid='sess_'+Date.now()+'_'+Math.random().toString(36).substr(2,9);sessionStorage.setItem('slate_session',sid);}
+  return sid;
+}
 
+function sendMessage(){
+  var text=input.value.trim();
+  if(!text)return;
+  input.value='';
+  sendBtn.disabled=true;
+  input.disabled=true;
   addMsg(text,'user');
   chatHistory.push({role:'user',content:text});
   showTyping();
 
-  setTimeout(function(){
+  fetch('/api/chat',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({session_id:getOrCreateSessionId(),messages:chatHistory})
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
     removeTyping();
-    var reply = 'Tak for din besked! Vi kontakter dig inden for 1 arbejdsdag. Du kan ogs\u00e5 skrive til hej@slate.nu eller ringe p\u00e5 +45 60 59 72 36.';
+    var reply=data.response||'Beklager - der opstod en fejl. Skriv til hej@slate.nu';
     chatHistory.push({role:'assistant',content:reply});
     addMsg(reply,'ai');
-    input.disabled = false;
-    sendBtn.disabled = false;
+    input.disabled=false;
+    sendBtn.disabled=false;
     input.focus();
-  }, 1200);
+  })
+  .catch(function(){
+    removeTyping();
+    addMsg('Beklager \u2014 der opstod en fejl. Skriv til hej@slate.nu','ai');
+    input.disabled=false;
+    sendBtn.disabled=false;
+  });
 }
 
 toggleBtn.addEventListener('click',function(){
