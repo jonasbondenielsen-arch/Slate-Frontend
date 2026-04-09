@@ -1,7 +1,10 @@
 {
   "functions": {
-    "api/*.js": {
-      "runtime": "nodejs18.x"
+    "api/chat.js": {
+      "maxDuration": 30
+    },
+    "api/manual-reply.js": {
+      "maxDuration": 10
     }
   }
 }
