@@ -1,0 +1,2 @@
+# Slate-Frontend
+Slate hjemmeside 
