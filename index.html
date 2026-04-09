@@ -1397,12 +1397,12 @@ sendBtn.addEventListener('click',sendMessage);
     .then(function(){
       formDiv.style.display='none';
       successDiv.style.display='block';
-      successMsg.textContent='Tak '+navn+' \u2014 Jonas ringer dig op inden for 1 time.';
+      successMsg.textContent='Tak '+navn+' \u2014 En Slate medarbejder ringer dig op inden for \u00e9n time.';
     })
     .catch(function(){
       formDiv.style.display='none';
       successDiv.style.display='block';
-      successMsg.textContent='Tak '+navn+' \u2014 Jonas ringer dig op inden for 1 time. (hej@slate.nu)';
+      successMsg.textContent='Tak '+navn+' \u2014 En Slate medarbejder ringer dig op inden for \u00e9n time. Eller skriv til hej@slate.nu';
     });
   });
 })();
