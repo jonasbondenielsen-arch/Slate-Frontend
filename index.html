@@ -482,7 +482,7 @@ img{max-width:100%}
 .footer-copy{font-size:13px;color:var(--muted)}
 
 /* ===== CHAT WIDGET ===== */
-.chat-widget{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;align-items:flex-end}
+.chat-widget{position:fixed;bottom:80px;right:24px;z-index:9999;display:flex;flex-direction:column;align-items:flex-end}
 @keyframes chatpulse{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.4);opacity:0}}
 .chat-btn{
   position:relative;width:58px;height:58px;background:var(--primary);border:none;
@@ -574,7 +574,7 @@ img{max-width:100%}
 </style>
 </head>
 <body>
-<div id="cookie-banner" style="position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;color:#fff;padding:16px 24px;z-index:9999;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;font-size:14px;"><span>Vi bruger cookies til at forbedre din oplevelse. <a href="#" style="color:#4ade80;text-decoration:underline;">Læs mere</a></span><button onclick="acceptCookies()" style="background:#1B6B5A;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:600;white-space:nowrap;">Accepter</button></div>
+<div id="cookie-banner" style="position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;color:#fff;padding:16px 24px;z-index:99999;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;font-size:14px;"><span>Vi bruger cookies til at forbedre din oplevelse. <a href="#" style="color:#4ade80;text-decoration:underline;">Læs mere</a></span><button onclick="acceptCookies()" style="background:#1B6B5A;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:600;white-space:nowrap;">Accepter</button></div>
 <script>function acceptCookies(){document.getElementById("cookie-banner").style.display="none";localStorage.setItem("cookiesOk","1");}window.addEventListener("DOMContentLoaded",function(){if(localStorage.getItem("cookiesOk")){document.getElementById("cookie-banner").style.display="none";}});</script>
 
 <!-- ===== NAV ===== -->
