@@ -1,10 +1,7 @@
 {
   "functions": {
-    "api/chat.js": {
-      "maxDuration": 30
-    },
-    "api/manual-reply.js": {
-      "maxDuration": 10
-    }
+    "api/chat.js": {"maxDuration": 30},
+    "api/manual-reply.js": {"maxDuration": 10},
+    "api/booking.js": {"maxDuration": 10}
   }
 }
