@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Slate &ndash; Lav tilbud p&aring; 2 minutter ude hos kunden</title>
+<meta name="description" content="Slate hj&aelig;lper danske h&aring;ndv&aelig;rksmestre med at lave pr&aelig;cise tilbud p&aring; 2 minutter &ndash; direkte fra telefonen. Baseret p&aring; dine egne sager.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== TOKENS ===== */
+:root{
+  --primary:#1B6B5A;
+  --primary-light:#2A8F74;
+  --primary-subtle:#E8F5F1;
+  --dark:#1C2B36;
+  --text:#2D3E4A;
+  --muted:#6B8090;
+  --bg:#F7F8F6;
+  --white:#FFFFFF;
+  --success:#2E7D52;
+  --border:rgba(28,43,54,.08);
+  --red-accent:rgba(239,68,68,.9);
+  --green-accent:rgba(74,222,128,.9);
+  --font-head:'Nunito',sans-serif;
+  --font-body:'Plus Jakarta Sans',sans-serif;
+}
+
+/* ===== RESET ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);font-size:17px;line-height:1.6;overflow-x:hidden}
+h1,h2,h3{font-family:var(--font-head);font-weight:800}
+a{text-decoration:none}
+img{max-width:100%}
+
+/* ===== ANIMATION ===== */
+.fade-in{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+
+/* ===== SHARED ===== */
+.inner{max-width:1100px;margin:0 auto}
+.sec{padding:100px 5%}
+.label-pill{
+  display:inline-block;background:var(--primary);color:#fff;
+  padding:4px 14px;border-radius:50px;font-size:12px;font-weight:500;
+  letter-spacing:.05em;margin-bottom:16px
+}
+.label-pill-dark{
+  display:inline-block;background:rgba(255,255,255,.08);color:#fff;
+  padding:4px 14px;border-radius:50px;font-size:12px;font-weight:500;
+  letter-spacing:.05em;margin-bottom:16px
+}
+
+/* ===== NAV ===== */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(247,248,246,.92);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  padding:16px 5%;
+  display:flex;justify-content:space-between;align-items:center
+}
+.nav-logo{font-family:var(--font-head);font-weight:800;font-size:22px;color:var(--dark);letter-spacing:-.5px}
+.nav-links{display:flex;gap:32px;align-items:center}
+.nav-link{font-size:14px;font-weight:500;color:var(--muted);text-decoration:none;transition:color .2s;font-family:var(--font-body);white-space:nowrap}
+.nav-link:hover{color:var(--primary)}
+.nav-btns{display:flex;gap:10px;align-items:center}
+.nav-btn-outline{border:1.5px solid var(--primary);background:transparent;color:var(--primary);padding:9px 18px;border-radius:50px;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:var(--font-body)}
+.nav-btn-outline:hover{background:var(--primary-subtle)}
+.nav-btn-filled{background:var(--primary);color:#fff;border:none;padding:9px 18px;border-radius:50px;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap;box-shadow:0 2px 12px rgba(27,107,90,.2);font-family:var(--font-body)}
+.nav-btn-filled:hover{background:var(--primary-light);transform:translateY(-1px)}
+.nav-mobile-btn{display:none;background:var(--primary);color:#fff;padding:8px 16px;border-radius:50px;font-size:13px;font-weight:500;border:none;font-family:var(--font-body);cursor:pointer}
+
+/* ===== HERO ===== */
+.hero{
+  padding:120px 5% 80px;background:var(--bg);
+  position:relative;overflow:hidden
+}
+.hero-bg{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 55% at 70% 40%,rgba(27,107,90,.07) 0%,transparent 70%),
+    radial-gradient(ellipse 45% 45% at 20% 75%,rgba(27,107,90,.04) 0%,transparent 60%)
+}
+.hero-grid{
+  max-width:1100px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;
+  position:relative
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(27,107,90,.1);color:var(--primary);
+  padding:6px 14px;border-radius:50px;font-size:13px;font-weight:500;margin-bottom:24px
+}
+.hero-badge-dot{width:8px;height:8px;background:var(--primary);border-radius:50%;animation:pulse 2s infinite;flex-shrink:0}
+.hero-h1{font-size:clamp(36px,5vw,60px);letter-spacing:-1.5px;line-height:1.08;color:var(--dark);margin-bottom:22px}
+.hero-sub{font-size:19px;color:var(--muted);max-width:480px;line-height:1.65;margin-bottom:38px}
+.hero-ctas{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.btn-primary{
+  background:var(--primary);color:#fff;padding:15px 30px;border-radius:50px;
+  font-size:16px;font-weight:500;border:none;cursor:pointer;
+  box-shadow:0 4px 20px rgba(27,107,90,.28);transition:all .2s;
+  font-family:var(--font-body);display:inline-flex;align-items:center
+}
+.btn-primary:hover{background:var(--primary-light);transform:translateY(-2px)}
+.hero-link{
+  color:var(--text);font-size:15px;font-weight:500;opacity:.65;
+  display:inline-flex;align-items:center;gap:5px;transition:opacity .2s
+}
+.hero-link:hover{opacity:1}
+
+/* phone */
+@keyframes floatphone{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.phone-wrap{display:flex;justify-content:center;align-items:center}
+.phone-outer{
+  width:290px;background:#1C1C1E;border-radius:50px;padding:14px;
+  box-shadow:0 40px 80px rgba(0,0,0,.22),0 0 0 1px rgba(255,255,255,.08);
+  animation:floatphone 5s ease-in-out infinite
+}
+.phone-island{width:120px;height:32px;background:#000;border-radius:20px;margin:0 auto 12px;display:block}
+.phone-screen{
+  background:#0F1923;border-radius:36px;overflow:hidden;
+  min-height:520px;display:flex;flex-direction:column
+}
+.phone-bar{
+  background:#172433;padding:12px 14px;display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid rgba(255,255,255,.06)
+}
+.phone-av{
+  width:28px;height:28px;background:var(--primary);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;flex-shrink:0
+}
+.phone-name{font-size:12px;font-weight:600;color:#fff;line-height:1.2}
+.phone-sub{font-size:9px;color:rgba(255,255,255,.45)}
+.phone-msgs{flex:1;padding:12px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.msg-user{
+  background:var(--primary);color:#fff;font-size:11px;line-height:1.5;
+  padding:8px 11px;border-radius:12px 12px 3px 12px;align-self:flex-end;max-width:85%
+}
+.msg-ai{
+  background:#1E2D3D;color:rgba(255,255,255,.85);font-size:11px;line-height:1.5;
+  padding:8px 11px;border-radius:12px 12px 12px 3px;align-self:flex-start;max-width:90%
+}
+.result-card{
+  background:#172433;border:1px solid rgba(255,255,255,.08);border-left:3px solid var(--primary);
+  border-radius:8px;padding:9px 10px;margin-top:4px;font-size:10px;
+  color:rgba(255,255,255,.7);align-self:flex-start;width:90%
+}
+.rc-row{
+  display:flex;justify-content:space-between;padding:3px 0;
+  border-bottom:1px solid rgba(255,255,255,.06)
+}
+.rc-row:last-child{border-bottom:none}
+.rc-warn{color:rgba(255,180,0,.85);font-size:9px}
+.phone-input-bar{
+  background:#172433;border-top:1px solid rgba(255,255,255,.06);
+  padding:9px 12px;display:flex;align-items:center;gap:8px
+}
+.phone-fake-input{
+  flex:1;background:#1E2D3D;border-radius:16px;padding:6px 11px;
+  font-size:10px;color:rgba(255,255,255,.3)
+}
+.phone-send{
+  width:26px;height:26px;background:var(--primary);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0
+}
+
+/* ===== TRUST BAR ===== */
+.trust{
+  background:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:22px 5%;display:flex;justify-content:center;align-items:center;
+  gap:40px;flex-wrap:wrap
+}
+.trust-item{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);font-weight:500}
+.trust-dot{width:7px;height:7px;background:var(--primary);border-radius:50%;flex-shrink:0}
+
+/* ===== HOW IT WORKS ===== */
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.step-card{
+  background:#fff;border:1px solid var(--border);border-radius:18px;padding:36px 28px;
+  position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s
+}
+.step-card:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.07)}
+.step-ghost{
+  position:absolute;top:-8px;right:16px;font-family:var(--font-head);font-weight:800;
+  font-size:80px;color:rgba(27,107,90,.06);line-height:1;user-select:none
+}
+.step-icon{
+  width:48px;height:48px;background:var(--primary-subtle);border-radius:14px;
+  display:flex;align-items:center;justify-content:center;margin-bottom:20px
+}
+.step-title{font-family:var(--font-head);font-weight:700;font-size:20px;color:var(--dark);margin-bottom:10px}
+.step-body{font-size:15px;color:var(--muted);line-height:1.65}
+
+/* ===== DEMO ===== */
+.demo-sec{background:var(--primary-subtle);padding:100px 5%}
+.demo-header{text-align:center;margin-bottom:0}
+.demo-phones{
+  display:flex;justify-content:center;align-items:flex-end;
+  gap:-20px;padding:40px 0;position:relative
+}
+.demo-phone-wrap{display:flex;flex-direction:column;align-items:center;gap:14px}
+.demo-phone-outer{
+  background:#1C1C1E;border-radius:44px;padding:11px;
+  box-shadow:0 30px 60px rgba(0,0,0,.18)
+}
+.demo-screen{background:#0F1923;border-radius:34px;overflow:hidden;height:460px;display:flex;flex-direction:column}
+.dp-left .demo-phone-outer{transform:rotate(-4deg) scale(.9);z-index:1}
+.dp-right .demo-phone-outer{transform:rotate(4deg) scale(.9);z-index:1}
+.dp-center .demo-phone-outer{transform:scale(1.05);z-index:3;margin-bottom:20px}
+.demo-caption{font-size:13px;color:var(--muted);text-align:center}
+@keyframes dotbounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-4px)}}
+.typing-dot{
+  width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.4);
+  display:inline-block;animation:dotbounce 1.2s infinite
+}
+.demo-callout{
+  max-width:640px;margin:40px auto 0;background:#fff;border-radius:14px;
+  border-left:4px solid var(--primary);padding:18px 22px;
+  font-size:15px;color:var(--text);line-height:1.6
+}
+/* success screen */
+.success-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:8px;padding:16px}
+.success-check{
+  width:40px;height:40px;background:rgba(74,222,128,.2);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:rgba(74,222,128,.9);margin-bottom:4px
+}
+.success-title{color:#fff;font-weight:600;font-size:12px;text-align:center}
+.success-sub{color:rgba(255,255,255,.6);font-size:10px;text-align:center}
+.success-price{color:var(--green-accent);font-family:var(--font-head);font-weight:700;font-size:18px}
+.success-btns{display:flex;flex-direction:column;gap:6px;width:100%;margin-top:8px}
+.success-btn-p{
+  background:var(--primary);color:#fff;border:none;border-radius:20px;
+  padding:7px;font-size:10px;cursor:pointer;text-align:center
+}
+.success-btn-o{
+  background:transparent;color:rgba(255,255,255,.7);
+  border:1px solid rgba(255,255,255,.25);border-radius:20px;
+  padding:7px;font-size:10px;cursor:pointer;text-align:center
+}
+
+/* ===== GET STARTED ===== */
+.igang-steps{max-width:680px;margin:0 auto}
+.igang-step{display:flex;gap:28px;margin-bottom:40px}
+.igang-step:last-child{margin-bottom:0}
+.igang-num{
+  width:52px;height:52px;min-width:52px;background:var(--primary);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-head);font-weight:800;font-size:22px;color:#fff;flex-shrink:0
+}
+.igang-title{font-family:var(--font-head);font-weight:700;font-size:20px;color:var(--dark);margin-bottom:8px}
+.igang-body{font-size:16px;color:var(--muted);line-height:1.65}
+.igang-callout{
+  background:var(--primary-subtle);border:1px solid rgba(27,107,90,.15);
+  border-radius:14px;padding:18px 24px;max-width:560px;margin:40px auto 0;
+  text-align:center;font-size:15px;color:var(--primary);font-weight:500
+}
+
+/* ===== ROI / BENEFITS ===== */
+.roi-sec{background:var(--bg);padding:100px 5%}
+.ben-grid-light{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.ben-card-light{background:#fff;border:1px solid var(--border);border-radius:18px;padding:28px 24px;transition:transform .2s,box-shadow .2s}
+.ben-card-light:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.07)}
+.ben-icon-light{width:44px;height:44px;background:var(--primary-subtle);border-radius:13px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.ben-title-light{font-family:var(--font-head);font-weight:700;font-size:17px;color:var(--dark);margin-bottom:8px;line-height:1.3}
+.ben-body-light{font-size:14px;color:var(--muted);line-height:1.65}
+.roi-inner{max-width:1100px;margin:0 auto;text-align:center}
+.roi-h2{
+  color:#fff;font-size:clamp(28px,4vw,50px);letter-spacing:-1px;
+  max-width:760px;margin:0 auto 14px;line-height:1.15
+}
+.roi-intro-sub{color:rgba(255,255,255,.6);font-size:17px;max-width:560px;margin:0 auto 56px;line-height:1.7}
+.comp-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:24px;padding:48px;text-align:left
+}
+.comp-cols{display:grid;grid-template-columns:1fr 1px 1fr;gap:48px}
+.comp-divider{background:rgba(255,255,255,.08);align-self:stretch}
+.comp-col-hd{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:24px}
+.comp-col-hd.red{color:var(--red-accent)}
+.comp-col-hd.green{color:var(--green-accent)}
+.comp-row{
+  display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px
+}
+.comp-row:last-child{border-bottom:none}
+.comp-row-lbl{color:rgba(255,255,255,.6)}
+.comp-row-val{color:#fff;font-weight:500;white-space:nowrap}
+.comp-inner-div{height:1px;background:rgba(255,255,255,.08);margin:20px 0}
+.comp-big{font-family:var(--font-head);font-weight:800;line-height:1.1;margin-bottom:4px}
+.comp-big.red{font-size:38px;color:var(--red-accent)}
+.comp-big.green{font-size:48px;color:var(--green-accent)}
+.comp-lbl{color:rgba(255,255,255,.5);font-size:13px;margin-bottom:8px}
+.comp-note{color:rgba(255,255,255,.35);font-size:11px;font-style:italic;margin-top:10px;line-height:1.65}
+/* stats banner */
+.stats-banner{background:rgba(255,255,255,.06);border-radius:16px;padding:28px 32px;margin-top:32px}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;text-align:center}
+.stat-num{font-family:var(--font-head);font-weight:800;font-size:36px;color:var(--green-accent);line-height:1.1}
+.stat-lbl{color:rgba(255,255,255,.6);font-size:13px;margin-top:4px}
+.stats-hr{height:1px;background:rgba(255,255,255,.06);margin-top:20px;padding-top:14px}
+.stats-src{color:rgba(255,255,255,.25);font-size:11px;font-style:italic;text-align:center;padding-top:14px}
+/* benefits grid */
+.ben-hdr{text-align:center;margin:40px 0 32px}
+.ben-h3{font-family:var(--font-head);font-weight:800;color:#fff;font-size:28px;margin-bottom:10px}
+.ben-sub{color:rgba(255,255,255,.6);font-size:15px;max-width:520px;margin:0 auto;line-height:1.7}
+.ben-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.ben-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:18px;padding:28px 24px;transition:background .2s,transform .2s
+}
+.ben-card:hover{background:rgba(255,255,255,.07);transform:translateY(-3px)}
+.ben-icon{
+  width:44px;height:44px;background:rgba(42,143,116,.15);border-radius:13px;
+  display:flex;align-items:center;justify-content:center;margin-bottom:16px
+}
+.ben-title{font-family:var(--font-head);font-weight:700;color:#fff;font-size:16px;margin-bottom:8px;line-height:1.3}
+.ben-body{color:rgba(255,255,255,.55);font-size:13px;line-height:1.65}
+/* win rate card */
+.win-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:24px;padding:48px;margin-top:24px;
+  display:grid;grid-template-columns:58% 42%;gap:48px;align-items:center;text-align:left
+}
+.win-pill{
+  display:inline-block;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);
+  font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;
+  border-radius:50px;padding:5px 14px
+}
+.win-h3{font-family:var(--font-head);font-weight:800;color:#fff;font-size:24px;margin:12px 0 8px;line-height:1.25}
+.win-sub{color:rgba(255,255,255,.6);font-size:14px;line-height:1.65;margin-bottom:20px}
+.win-bullet{
+  display:flex;align-items:flex-start;gap:12px;padding:9px 0;
+  border-bottom:1px solid rgba(255,255,255,.06);font-size:14px;color:rgba(255,255,255,.8);line-height:1.5
+}
+.win-bullet:last-child{border-bottom:none}
+.win-dot{width:8px;height:8px;border-radius:50%;background:#2A8F74;flex-shrink:0;margin-top:5px}
+.timing{display:flex;flex-direction:column;gap:0}
+.tbox{border-radius:16px;padding:24px 20px;text-align:center}
+.tbox-w{background:rgba(255,255,255,.07)}
+.tbox-l{background:rgba(255,255,255,.04)}
+.tday{font-family:var(--font-head);font-weight:800;font-size:38px;line-height:1}
+.tbox-w .tday{color:#2A8F74}
+.tbox-l .tday{color:rgba(255,255,255,.3)}
+.tlbl{font-size:12px;margin-top:6px}
+.tbox-w .tlbl{color:rgba(255,255,255,.55)}
+.tbox-l .tlbl{color:rgba(255,255,255,.35)}
+.tmod{color:rgba(255,255,255,.25);font-size:11px;text-align:center;padding:10px 0}
+/* roi cta */
+.roi-cta-wrap{text-align:center;margin-top:52px}
+.btn-outline-white{
+  border:1.5px solid rgba(255,255,255,.25);background:transparent;color:#fff;
+  padding:16px 38px;border-radius:50px;font-size:15px;font-weight:500;cursor:pointer;
+  transition:all .2s;font-family:var(--font-body)
+}
+.btn-outline-white:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.5);transform:translateY(-1px)}
+.roi-cta-note{color:rgba(255,255,255,.35);font-size:13px;text-align:center;margin-top:12px}
+
+/* ===== SIMPLICITY ===== */
+.simplicity{background:var(--primary);padding:90px 5%;text-align:center}
+.simplicity-inner{max-width:700px;margin:0 auto}
+.simplicity-h2{color:#fff;font-size:clamp(26px,4vw,44px);letter-spacing:-1px;margin-bottom:18px}
+.simplicity-body{color:#fff;opacity:.85;font-size:18px;line-height:1.7;margin-bottom:36px}
+.simp-pills{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.simp-pill{
+  border:1.5px solid rgba(255,255,255,.3);color:#fff;
+  padding:9px 20px;border-radius:50px;font-size:14px;font-weight:500
+}
+
+/* ===== BEFORE/AFTER ===== */
+.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.ba-list{display:flex;flex-direction:column;gap:10px}
+.ba-item{
+  border-radius:12px;padding:13px 16px;display:flex;align-items:flex-start;gap:12px;font-size:15px
+}
+.ba-item.bad{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.12);color:rgba(180,40,40,.9)}
+.ba-item.good{background:rgba(27,107,90,.06);border:1px solid rgba(27,107,90,.12);color:var(--success)}
+.ba-icon{font-size:16px;flex-shrink:0}
+.ba-stat{background:var(--dark);border-radius:20px;padding:40px}
+.ba-big{font-family:var(--font-head);font-weight:800;font-size:60px;color:var(--primary);line-height:1}
+.ba-big-sub{color:rgba(255,255,255,.65);font-size:16px;line-height:1.55;margin:10px 0 28px}
+.ba-bullet{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.ba-bullet:last-of-type{border-bottom:none}
+.ba-bdot{width:6px;height:6px;background:var(--primary);border-radius:50%;flex-shrink:0;margin-top:6px}
+.ba-btext{color:rgba(255,255,255,.75);font-size:14px}
+.ba-src{color:rgba(255,255,255,.35);font-size:11px;margin-top:16px;font-style:italic}
+
+/* ===== PRICING ===== */
+.pricing-sec{background:var(--dark);padding:100px 5%;text-align:center}
+.pricing-h2{color:#fff;font-size:clamp(28px,4vw,46px);letter-spacing:-1px;margin-bottom:14px}
+.pricing-sub{color:rgba(255,255,255,.6);font-size:17px;max-width:460px;margin:0 auto 56px;line-height:1.65}
+.price-card{
+  max-width:520px;margin:0 auto;background:var(--primary);
+  border-radius:24px;padding:48px;text-align:left
+}
+.price-badge{
+  display:inline-block;background:rgba(255,255,255,.15);color:#fff;
+  padding:5px 16px;border-radius:50px;font-size:12px;font-weight:500;margin-bottom:20px
+}
+.price-title{font-family:var(--font-head);font-weight:800;color:#fff;font-size:22px;margin-bottom:6px}
+.price-desc{color:rgba(255,255,255,.7);font-size:14px;margin-bottom:28px}
+.price-line{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+.price-big{font-family:var(--font-head);font-weight:800;font-size:36px;color:#fff}
+.price-period{color:rgba(255,255,255,.65);font-size:13px}
+.price-divider{height:1px;background:rgba(255,255,255,.15);margin:14px 0}
+.price-feats{list-style:none;margin-top:20px}
+.price-feat{
+  display:flex;align-items:center;gap:10px;padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.12);font-size:14px;color:rgba(255,255,255,.85)
+}
+.price-feat:last-child{border-bottom:none}
+.feat-check{
+  width:20px;height:20px;background:rgba(255,255,255,.15);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;flex-shrink:0
+}
+.price-cta{
+  display:block;width:100%;margin-top:28px;background:#fff;color:var(--primary);
+  padding:15px;border-radius:50px;border:none;font-size:16px;font-weight:700;
+  font-family:var(--font-head);cursor:pointer;text-align:center;transition:all .2s
+}
+.price-cta:hover{background:rgba(255,255,255,.9);transform:translateY(-2px)}
+.price-note{color:rgba(255,255,255,.5);font-size:13px;text-align:center;margin-top:12px}
+.price-bottom{color:rgba(255,255,255,.35);font-size:13px;text-align:center;margin-top:20px}
+
+/* ===== TESTIMONIALS ===== */
+.testi-sec{background:var(--primary-subtle);padding:100px 5%}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.testi-card{
+  background:#fff;border:1px solid var(--border);border-radius:18px;
+  padding:30px 26px;transition:transform .2s,box-shadow .2s
+}
+.testi-card:hover{transform:translateY(-4px);box-shadow:0 16px 36px rgba(0,0,0,.07)}
+.testi-stars{color:var(--primary);font-size:15px;letter-spacing:2px;margin-bottom:14px}
+.testi-quote{font-size:15px;color:var(--text);line-height:1.65;font-style:italic;margin-bottom:20px}
+.testi-author{display:flex;align-items:center;gap:10px}
+.testi-av{
+  width:38px;height:38px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0
+}
+.testi-name{font-size:14px;font-weight:500;color:var(--dark)}
+.testi-role{font-size:12px;color:var(--muted)}
+
+/* ===== BOTTOM CTA ===== */
+.cta-sec{background:var(--primary);padding:100px 5%;text-align:center;position:relative;overflow:hidden}
+.cta-circle{
+  position:absolute;top:-80px;left:50%;transform:translateX(-50%);
+  width:500px;height:500px;background:rgba(255,255,255,.05);
+  border-radius:50%;pointer-events:none
+}
+.cta-inner{max-width:680px;margin:0 auto;position:relative}
+.cta-h2{color:#fff;font-size:clamp(28px,4vw,52px);letter-spacing:-1px;margin-bottom:14px}
+.cta-body{color:rgba(255,255,255,.82);font-size:18px;line-height:1.65;margin-bottom:38px}
+.btn-white{
+  background:#fff;color:var(--primary);padding:18px 42px;border-radius:50px;
+  font-size:17px;font-weight:700;font-family:var(--font-head);display:inline-flex;align-items:center;gap:8px;
+  box-shadow:0 4px 24px rgba(0,0,0,.14);transition:all .2s;position:relative
+}
+.btn-white:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.2)}
+.cta-note{color:rgba(255,255,255,.6);font-size:14px;margin-top:18px;display:block}
+
+/* ===== FOOTER ===== */
+.footer{
+  background:var(--bg);padding:36px 5%;border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px
+}
+.footer-logo{font-family:var(--font-head);font-weight:800;font-size:18px;color:var(--dark)}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap;justify-content:center}
+.footer-link{font-size:14px;color:var(--muted);transition:color .2s}
+.footer-link:hover{color:var(--primary)}
+.footer-copy{font-size:13px;color:var(--muted)}
+
+/* ===== CHAT WIDGET ===== */
+.chat-widget{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;align-items:flex-end}
+@keyframes chatpulse{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.4);opacity:0}}
+.chat-btn{
+  position:relative;width:58px;height:58px;background:var(--primary);border:none;
+  border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(27,107,90,.35);transition:all .2s;flex-shrink:0
+}
+.chat-btn::before{
+  content:'';position:absolute;inset:-4px;border-radius:50%;
+  border:2px solid rgba(27,107,90,.3);animation:chatpulse 2.5s infinite
+}
+.chat-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(27,107,90,.45)}
+.chat-panel{
+  width:360px;height:520px;background:#fff;border-radius:20px;
+  box-shadow:0 20px 60px rgba(0,0,0,.15);border:1px solid var(--border);
+  display:flex;flex-direction:column;margin-bottom:12px;
+  transform-origin:bottom right;
+  transition:transform .2s ease,opacity .2s ease
+}
+.chat-panel.hidden{transform:scale(.92);opacity:0;pointer-events:none}
+.chat-head{
+  background:var(--primary);border-radius:20px 20px 0 0;padding:16px 18px;
+  display:flex;align-items:center;justify-content:space-between
+}
+.chat-head-left{display:flex;align-items:center;gap:10px}
+.chat-head-av{
+  width:32px;height:32px;background:rgba(255,255,255,.2);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff
+}
+.chat-head-name{font-size:14px;font-weight:600;color:#fff;line-height:1.2}
+.chat-head-sub{font-size:11px;color:rgba(255,255,255,.65)}
+.chat-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:20px;cursor:pointer;line-height:1;padding:4px}
+.chat-msgs{
+  flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px
+}
+.cm-user{
+  align-self:flex-end;background:var(--primary);color:#fff;
+  border-radius:14px 14px 3px 14px;padding:9px 12px;font-size:13px;max-width:85%;line-height:1.5
+}
+.cm-ai{
+  align-self:flex-start;background:#F1F5F3;color:var(--text);
+  border-radius:14px 14px 14px 3px;padding:9px 12px;font-size:13px;max-width:85%;line-height:1.5
+}
+.cm-ts{font-size:10px;color:var(--muted);display:block;margin-top:2px}
+.cm-typing{display:flex;gap:4px;align-items:center;padding:2px 0}
+.chat-input-row{border-top:1px solid var(--border);padding:12px 14px;display:flex;gap:10px;align-items:center}
+.chat-input{
+  flex:1;border:1px solid var(--border);border-radius:20px;padding:8px 13px;
+  font-size:13px;font-family:var(--font-body);outline:none;resize:none;transition:border-color .2s
+}
+.chat-input:focus{border-color:var(--primary)}
+.chat-send{
+  width:36px;height:36px;background:var(--primary);border:none;border-radius:50%;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .2s
+}
+.chat-send:disabled{opacity:.45;cursor:not-allowed}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .nav-btns{display:none}
+  .nav-mobile-btn{display:block}
+  .ben-grid-light{grid-template-columns:1fr}
+  .sec{padding:64px 5%}
+  .hero{padding:100px 5% 64px}
+  .hero-grid{grid-template-columns:1fr;gap:0}
+  .phone-wrap{display:none}
+  .hero-left{text-align:center}
+  .hero-left .hero-sub{margin-left:auto;margin-right:auto}
+  .hero-left .hero-ctas{justify-content:center}
+  .trust{gap:16px;justify-content:center}
+  .steps-grid{grid-template-columns:1fr}
+  .demo-phones{flex-direction:column;align-items:center}
+  .dp-left,.dp-right{display:none}
+  .dp-center .demo-phone-outer{transform:none;margin-bottom:0}
+  .ba-grid{grid-template-columns:1fr}
+  .ben-grid{grid-template-columns:1fr}
+  .win-card{grid-template-columns:1fr;padding:24px}
+  .comp-cols{grid-template-columns:1fr;gap:0}
+  .comp-divider{display:none}
+  .comp-cols > div:first-child{padding-bottom:28px;margin-bottom:28px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .stats-grid{grid-template-columns:1fr}
+  .testi-grid{grid-template-columns:1fr}
+  .price-card{padding:28px}
+  .comp-card{padding:24px}
+  .roi-sec .comp-card,.roi-sec .win-card{margin-left:0;margin-right:0}
+  .footer{flex-direction:column;text-align:center}
+  .chat-panel{width:calc(100vw - 48px);right:0}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav class="nav">
+  <span class="nav-logo">Slate</span>
+  <div class="nav-links">
+    <a href="#hvordan" class="nav-link">Hvordan det virker</a>
+    <a href="#demo" class="nav-link">Se det i praksis</a>
+    <a href="#igang" class="nav-link">Kom i gang</a>
+    <a href="#priser" class="nav-link">Pris</a>
+    <a href="#faq" class="nav-link">FAQ</a>
+  </div>
+  <div class="nav-btns">
+    <button class="nav-btn-outline" onclick="window.location.href='booking.html#intro'">Book gratis intro</button>
+    <button class="nav-btn-filled" onclick="window.location.href='booking.html#start'">Kom i gang nu</button>
+  </div>
+  <button class="nav-mobile-btn" onclick="window.location.href='booking.html#start'">Kom i gang</button>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid">
+    <div class="hero-left fade-in">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        Vind flere tilbud &ndash; brug Slate
+      </div>
+      <h1 class="hero-h1">Lav tilbud p&aring; 2 minutter &ndash; ude hos kunden</h1>
+      <p class="hero-sub">Du skriver til Slate p&aring; din telefon. Den finder tallene fra dine egne sager og giver dig et pr&aelig;cist estimat p&aring; 30 sekunder. Du sender tilbuddet samme dag. Aldrig mere 3 timer ved k&oslash;kkenbordet om aftenen.</p>
+      <div class="hero-ctas">
+        <a href="#priser" class="btn-primary">Kom i gang nu &rarr;</a>
+        <a href="#kontakt" class="hero-link">Book gratis intro &darr;</a>
+      </div>
+      <span style="display:block;margin-top:16px;font-size:14px;color:var(--muted);font-style:italic">Sparer du ikke tid p&aring; dit f&oslash;rste tilbud &mdash; betaler du ikke en krone.</span>
+    </div>
+    <div class="phone-wrap fade-in" style="transition-delay:.15s">
+      <div class="phone-outer">
+        <span class="phone-island"></span>
+        <div class="phone-screen">
+          <div class="phone-bar">
+            <div class="phone-av">S</div>
+            <div>
+              <div class="phone-name">Slate</div>
+              <div class="phone-sub">Din kalkulationsassistent</div>
+            </div>
+          </div>
+          <div class="phone-msgs">
+            <div class="msg-user">Badev&aelig;relse 6 kvm, villa 1974, Br&oslash;ndby. Gulvvarme.</div>
+            <div class="msg-ai">Kigger i dine 47 sager...</div>
+            <div class="result-card">
+              <div class="rc-row"><span>Timer estimeret</span><span>73 timer</span></div>
+              <div class="rc-row"><span>Materialer</span><span>52.000 kr.</span></div>
+              <div class="rc-row"><span>Anbefalet pris</span><span style="color:var(--green-accent);font-weight:600">105.000 kr.</span></div>
+              <div class="rc-row rc-warn"><span>&#9888; Villa 70&rsquo;erne: typisk +18% tid</span></div>
+            </div>
+            <div class="msg-user">Perfekt &ndash; sender tilbuddet nu</div>
+            <div class="msg-ai"><span style="color:var(--green-accent)">&#10003;</span> Tilbudsgrundlag klar</div>
+          </div>
+          <div class="phone-input-bar">
+            <div class="phone-fake-input">Beskriv opgaven...</div>
+            <div class="phone-send">
+              <svg width="14" height="14" viewBox="0 0 16 16"><path d="M2 8L14 2L8 14L7 9L2 8Z" fill="white"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TRUST BAR ===== -->
+<div class="trust fade-in">
+  <div class="trust-item"><span class="trust-dot"></span>Ingen bindingsperiode</div>
+  <div class="trust-item"><span class="trust-dot"></span>Vi s&aelig;tter alt op for dig</div>
+  <div class="trust-item"><span class="trust-dot"></span>Virker for alle h&aring;ndv&aelig;rksfag</div>
+  <div class="trust-item"><span class="trust-dot"></span>Systemet l&aelig;rer af dine egne sager</div>
+</div>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="sec" id="hvordan">
+  <div class="inner">
+    <div class="fade-in">
+      <div class="label-pill">S&aring;dan virker det</div>
+      <h2 style="font-size:clamp(28px,4vw,46px);letter-spacing:-1px;color:var(--dark);margin-bottom:14px">Kan du skrive en sms? S&aring; kan du bruge Slate.</h2>
+      <p style="font-size:18px;color:var(--muted);max-width:520px;margin-bottom:56px;line-height:1.6">Ingen kursus. Ingen computer. Ingen ny app at l&aelig;re. Du skriver til Slate p&aring; dit eget sprog &ndash; systemet klarer resten.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card fade-in" style="transition-delay:.1s">
+        <span class="step-ghost">1</span>
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+          </svg>
+        </div>
+        <div class="step-title">Skriv til Slate</div>
+        <p class="step-body">Skriv som en sms. &lsquo;Badev&aelig;relse 6 kvm, gammel villa, gulvvarme.&rsquo; Ingen formular. Ingen skabelon. Bare dit eget sprog.</p>
+      </div>
+      <div class="step-card fade-in" style="transition-delay:.2s">
+        <span class="step-ghost">2</span>
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <ellipse cx="12" cy="5" rx="9" ry="3"/>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+          </svg>
+        </div>
+        <div class="step-title">Den finder tallene selv</div>
+        <p class="step-body">Slate kigger i alle dine tidligere sager og n&oslash;gletal med det samme. Du f&aring;r et estimat baseret p&aring; dine egne erfaringer &ndash; ikke hvad andre har lavet.</p>
+      </div>
+      <div class="step-card fade-in" style="transition-delay:.3s">
+        <span class="step-ghost">3</span>
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 2L11 13"/>
+            <path d="M22 2L15 22 11 13 2 9l20-7z"/>
+          </svg>
+        </div>
+        <div class="step-title">Du sender tilbuddet</div>
+        <p class="step-body">Ret lidt til og send. Kunden siger ja. Hele processen tager under 2 minutter &ndash; og du er stadig ude hos kunden.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DEMO ===== -->
+<section class="demo-sec" id="demo">
+  <div class="inner">
+    <div class="demo-header fade-in">
+      <div class="label-pill">Se det selv</div>
+      <h2 style="font-size:clamp(28px,4vw,46px);letter-spacing:-1px;color:var(--dark);margin-bottom:12px">S&aring;dan ser det ud &ndash; trin for trin</h2>
+      <p style="font-size:17px;color:var(--muted);max-width:480px;margin:0 auto">Ingen forklaring n&oslash;dvendig. Du skriver. Du f&aring;r svaret. Det er det hele.</p>
+    </div>
+    <div class="demo-phones">
+      <!-- Left phone -->
+      <div class="demo-phone-wrap dp-left fade-in" style="transition-delay:.1s">
+        <div class="demo-phone-outer" style="width:260px">
+          <span class="phone-island" style="width:110px;height:28px;margin-bottom:10px"></span>
+          <div class="demo-screen">
+            <div class="phone-bar">
+              <div class="phone-av" style="width:24px;height:24px;font-size:10px">S</div>
+              <div><div class="phone-name">Slate</div></div>
+            </div>
+            <div class="phone-msgs">
+              <div class="msg-user">Tagudskiftning, parcelhus 180 kvm, Odense. Tegl.</div>
+              <div class="msg-ai">
+                <div class="cm-typing">
+                  <span class="typing-dot" style="animation-delay:0s"></span>
+                  <span class="typing-dot" style="animation-delay:.15s"></span>
+                  <span class="typing-dot" style="animation-delay:.3s"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span class="demo-caption">Du beskriver opgaven</span>
+      </div>
+      <!-- Center phone -->
+      <div class="demo-phone-wrap dp-center fade-in" style="transition-delay:.2s">
+        <div class="demo-phone-outer" style="width:280px">
+          <span class="phone-island" style="width:116px;height:30px;margin-bottom:11px"></span>
+          <div class="demo-screen">
+            <div class="phone-bar">
+              <div class="phone-av" style="width:24px;height:24px;font-size:10px">S</div>
+              <div><div class="phone-name">Slate</div></div>
+            </div>
+            <div class="phone-msgs">
+              <div class="msg-user" style="font-size:10px">Tagudskiftning, parcelhus 180 kvm, Odense. Tegl.</div>
+              <div class="result-card" style="width:95%">
+                <div style="font-size:11px;font-weight:600;color:#fff;margin-bottom:6px">Tagudskiftning 180 kvm</div>
+                <div class="rc-row"><span>Timer</span><span>68&ndash;80 timer</span></div>
+                <div class="rc-row"><span>Materialer</span><span>~85.000 kr.</span></div>
+                <div class="rc-row"><span>Anbefalet tilbud</span><span style="color:var(--green-accent);font-weight:600">148.000 kr.</span></div>
+                <div class="rc-row rc-warn"><span>&#9888; Tegl: priser steget 12% siden seneste tagsag</span></div>
+              </div>
+            </div>
+            <div class="phone-input-bar">
+              <div class="phone-fake-input">Skriv svar...</div>
+              <div class="phone-send"><svg width="14" height="14" viewBox="0 0 16 16"><path d="M2 8L14 2L8 14L7 9L2 8Z" fill="white"/></svg></div>
+            </div>
+          </div>
+        </div>
+        <span class="demo-caption">Svar p&aring; 30 sekunder</span>
+      </div>
+      <!-- Right phone -->
+      <div class="demo-phone-wrap dp-right fade-in" style="transition-delay:.3s">
+        <div class="demo-phone-outer" style="width:260px">
+          <span class="phone-island" style="width:110px;height:28px;margin-bottom:10px"></span>
+          <div class="demo-screen">
+            <div class="success-screen">
+              <div class="success-check">&#10003;</div>
+              <div class="success-title">Tilbudsgrundlag klar</div>
+              <div class="success-sub">Tagudskiftning &ndash; Odense</div>
+              <div class="success-price">148.000 kr. inkl. moms</div>
+              <div class="success-btns">
+                <button class="success-btn-p">Del tilbud</button>
+                <button class="success-btn-o">Gem til database</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span class="demo-caption">Du sender tilbuddet</span>
+      </div>
+    </div>
+    <div class="demo-callout fade-in" style="transition-delay:.35s">
+      &ldquo;Slate husker alle dine tidligere sager, hvad materialerne kostede, og hvad der plejer at g&aring; galt. Jo mere du bruger det, jo skarpere bliver det.&rdquo;
+    </div>
+  </div>
+</section>
+
+<!-- ===== GET STARTED ===== -->
+<section class="sec" id="igang" style="background:#fff">
+  <div class="inner" style="max-width:900px">
+    <div class="fade-in">
+      <div class="label-pill">Onboarding</div>
+      <h2 style="font-size:clamp(28px,4vw,46px);letter-spacing:-1px;color:var(--dark);margin-bottom:14px">Hvordan kommer jeg i gang?</h2>
+      <p style="font-size:18px;color:var(--muted);max-width:480px;margin-bottom:60px;line-height:1.6">Tre trin. Ingen it-kendskab n&oslash;dvendigt. Du er k&oslash;rende p&aring; under en time.</p>
+    </div>
+    <div class="igang-steps">
+      <div class="igang-step fade-in" style="transition-delay:.1s">
+        <div class="igang-num">1</div>
+        <div>
+          <div class="igang-title">Vi m&oslash;des i 45 minutter</div>
+          <p class="igang-body">Vi ringer dig op og s&aelig;tter det hele op sammen med dig. Du beh&oslash;ver ikke g&oslash;re noget p&aring; forh&aring;nd. Bare dukke op &ndash; resten klarer vi.</p>
+        </div>
+      </div>
+      <div class="igang-step fade-in" style="transition-delay:.2s">
+        <div class="igang-num">2</div>
+        <div>
+          <div class="igang-title">Vi l&aelig;gger dine sager ind</div>
+          <p class="igang-body">Vi hj&aelig;lper dig med at l&aelig;gge dine tidligere sager ind i systemet. Det er disse sager Slate bruger, n&aring;r den beregner dine fremtidige tilbud. Jo flere sager, jo klogere bliver den.</p>
+        </div>
+      </div>
+      <div class="igang-step fade-in" style="transition-delay:.3s">
+        <div class="igang-num">3</div>
+        <div>
+          <div class="igang-title">Systemet bliver klogere over tid</div>
+          <p class="igang-body">Hver gang du laver et tilbud og afslutter en sag, l&aelig;rer systemet mere om din forretning. Dine tilbud bliver mere pr&aelig;cise for hver uge der g&aring;r &ndash; helt automatisk.</p>
+        </div>
+      </div>
+    </div>
+    <div class="igang-callout fade-in" style="transition-delay:.35s">
+      De fleste er klar til deres f&oslash;rste tilbud inden m&oslash;det slutter.
+    </div>
+  </div>
+</section>
+
+<!-- ===== ROI / BENEFITS ===== -->
+<section class="roi-sec" id="roi">
+  <div class="inner">
+    <div class="fade-in" style="text-align:center">
+      <div class="label-pill">Hvad du vinder</div>
+      <h2 style="font-family:var(--font-head);font-weight:800;font-size:clamp(28px,4vw,46px);color:var(--dark);letter-spacing:-1px;margin-bottom:14px">Mindre spildtid. Mere overskud. Bedre tilbud.</h2>
+      <p style="font-size:17px;color:var(--muted);max-width:500px;margin:0 auto 56px;line-height:1.6">Slate bygger p&aring; dine egne data og bliver skarpere for hvert tilbud du laver &mdash; helt automatisk.</p>
+    </div>
+    <div class="ben-grid-light">
+      <div class="ben-card-light fade-in" style="transition-delay:.05s">
+        <div class="ben-icon-light"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="ben-title-light">Tilbud p&aring; 2 minutter</div>
+        <p class="ben-body-light">Ude hos kunden. Aldrig mere 3 timer ved k&oslash;kkenbordet om aftenen.</p>
+      </div>
+      <div class="ben-card-light fade-in" style="transition-delay:.1s">
+        <div class="ben-icon-light"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+        <div class="ben-title-light">Bedre bundlinje</div>
+        <p class="ben-body-light">Systemet advarer dig inden du sender et tilbud der koster dig penge.</p>
+      </div>
+      <div class="ben-card-light fade-in" style="transition-delay:.15s">
+        <div class="ben-icon-light"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+        <div class="ben-title-light">Vind flere opgaver</div>
+        <p class="ben-body-light">Du svarer kunden samme dag. Dine konkurrenter g&oslash;r ikke.</p>
+      </div>
+      <div class="ben-card-light fade-in" style="transition-delay:.2s">
+        <div class="ben-icon-light"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <div class="ben-title-light">Ingen fejlkalkulationer</div>
+        <p class="ben-body-light">Den husker hvad der plejer at g&aring; galt &mdash; du slipper for ubehagelige overraskelser.</p>
+      </div>
+      <div class="ben-card-light fade-in" style="transition-delay:.25s">
+        <div class="ben-icon-light"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="ben-title-light">Skarpere for hvert tilbud</div>
+        <p class="ben-body-light">Systemet l&aelig;rer af dine egne sager og bliver mere pr&aelig;cist over tid.</p>
+      </div>
+      <div class="ben-card-light fade-in" style="transition-delay:.3s">
+        <div class="ben-icon-light"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div>
+        <div class="ben-title-light">Systemet arbejder for dig</div>
+        <p class="ben-body-light">Jo mere du bruger det, jo mere v&aelig;rdifuldt bliver det &mdash; helt uden ekstra indsats.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SIMPLICITY ===== -->
+<section class="simplicity fade-in">
+  <div class="simplicity-inner">
+    <h2 class="simplicity-h2">Ingen kursus. Ingen computer. Ingen forklaring.</h2>
+    <p class="simplicity-body">Slate er bygget til den travle mester &ndash; ikke til en it-n&oslash;rd. Du &aring;bner chatten og skriver hvad du skal lave. Det er det hele. Systemet husker dine tidligere sager, dine materialepriser og hvad der plejer at g&aring; galt. Du beh&oslash;ver ikke huske noget. Slate g&oslash;r det for dig.</p>
+    <div class="simp-pills">
+      <span class="simp-pill">Ingen computer n&oslash;dvendig</span>
+      <span class="simp-pill">Ingen kursus eller opl&aelig;ring</span>
+      <span class="simp-pill">Klar til brug p&aring; &eacute;n time</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="sec" id="faq" style="background:var(--bg)">
+  <div style="max-width:780px;margin:0 auto">
+    <div class="fade-in">
+      <div class="label-pill">Ofte stillede sp&oslash;rgsm&aring;l</div>
+      <h2 style="font-family:var(--font-head);font-weight:800;font-size:clamp(28px,4vw,44px);color:var(--dark);letter-spacing:-1px;margin-bottom:12px">Du sidder sikkert med et par sp&oslash;rgsm&aring;l</h2>
+      <p style="font-size:17px;color:var(--muted);max-width:500px;line-height:1.6;margin-bottom:52px">Her er svarene p&aring; dem vi f&aring;r oftest.</p>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px" class="fade-in" style="transition-delay:.1s">
+
+      <!-- Item 1 -->
+      <div class="faq-item" style="background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:box-shadow .2s">
+        <button class="faq-btn" style="display:flex;justify-content:space-between;align-items:center;width:100%;padding:22px 24px;background:none;border:none;cursor:pointer;text-align:left;gap:16px">
+          <span style="font-family:var(--font-head);font-weight:700;font-size:17px;color:var(--dark);line-height:1.4;flex:1">Skal jeg l&aelig;re et nyt system eller tage et kursus?</span>
+          <div class="faq-icon" style="width:28px;height:28px;min-width:28px;background:var(--primary-subtle);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .25s;color:var(--primary)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </button>
+        <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height .35s ease">
+          <div style="padding:0 24px 22px;font-size:15px;color:var(--muted);line-height:1.75">Nej. Hvis du kan skrive en sms, kan du bruge Slate. Du skriver til systemet p&aring; dit eget sprog &mdash; pr&aelig;cis som du ville skrive til en kollega. Ingen kursus, ingen computer, ingen opl&aelig;ring. De fleste er klar til deres f&oslash;rste tilbud inden opstartsm&oslash;det slutter.</div>
+        </div>
+      </div>
+
+      <!-- Item 2 -->
+      <div class="faq-item" style="background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:box-shadow .2s">
+        <button class="faq-btn" style="display:flex;justify-content:space-between;align-items:center;width:100%;padding:22px 24px;background:none;border:none;cursor:pointer;text-align:left;gap:16px">
+          <span style="font-family:var(--font-head);font-weight:700;font-size:17px;color:var(--dark);line-height:1.4;flex:1">Hvordan kommer jeg i gang &mdash; og hvor lang tid tager det?</span>
+          <div class="faq-icon" style="width:28px;height:28px;min-width:28px;background:var(--primary-subtle);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .25s;color:var(--primary)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </button>
+        <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height .35s ease">
+          <div style="padding:0 24px 22px;font-size:15px;color:var(--muted);line-height:1.75">Vi starter med et opstartsm&oslash;de p&aring; 45&ndash;60 minutter. Vi ringer dig op, s&aelig;tter systemet op og l&aelig;gger dine tidligere sager ind &mdash; du g&oslash;r ingenting p&aring; forh&aring;nd. Bagefter er du klar til at lave dit f&oslash;rste rigtige tilbud. Systemet bliver klogere for hver sag du afslutter, s&aring; jo mere du bruger det, jo mere pr&aelig;cist bliver det.</div>
+        </div>
+      </div>
+
+      <!-- Item 3 -->
+      <div class="faq-item" style="background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:box-shadow .2s">
+        <button class="faq-btn" style="display:flex;justify-content:space-between;align-items:center;width:100%;padding:22px 24px;background:none;border:none;cursor:pointer;text-align:left;gap:16px">
+          <span style="font-family:var(--font-head);font-weight:700;font-size:17px;color:var(--dark);line-height:1.4;flex:1">Virker det for min type h&aring;ndv&aelig;rk?</span>
+          <div class="faq-icon" style="width:28px;height:28px;min-width:28px;background:var(--primary-subtle);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .25s;color:var(--primary)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </button>
+        <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height .35s ease">
+          <div style="padding:0 24px 22px;font-size:15px;color:var(--muted);line-height:1.75">Ja. Slate virker for alle typer h&aring;ndv&aelig;rk &mdash; VVS, el, t&oslash;mrer, maler, murer, tagd&aelig;kning og mange andre fag. Systemet bruger dine egne historiske sager som grundlag, s&aring; det tilpasser sig pr&aelig;cis din forretning &mdash; ikke en generisk branchestandard.</div>
+        </div>
+      </div>
+
+      <!-- Item 4 -->
+      <div class="faq-item" style="background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:box-shadow .2s">
+        <button class="faq-btn" style="display:flex;justify-content:space-between;align-items:center;width:100%;padding:22px 24px;background:none;border:none;cursor:pointer;text-align:left;gap:16px">
+          <span style="font-family:var(--font-head);font-weight:700;font-size:17px;color:var(--dark);line-height:1.4;flex:1">Hvad sker der med mine data &mdash; er de sikre?</span>
+          <div class="faq-icon" style="width:28px;height:28px;min-width:28px;background:var(--primary-subtle);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .25s;color:var(--primary)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </button>
+        <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height .35s ease">
+          <div style="padding:0 24px 22px;font-size:15px;color:var(--muted);line-height:1.75">Dine sager og kalkulationer er kun dine. Vi deler dem ikke med andre virksomheder eller bruger dem til at tr&aelig;ne et f&aelig;lles system. Alt k&oslash;rer krypteret og gemmes sikkert. Du ejer dine egne data &mdash; til enhver tid.</div>
+        </div>
+      </div>
+
+      <!-- Item 5 -->
+      <div class="faq-item" style="background:white;border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:box-shadow .2s">
+        <button class="faq-btn" style="display:flex;justify-content:space-between;align-items:center;width:100%;padding:22px 24px;background:none;border:none;cursor:pointer;text-align:left;gap:16px">
+          <span style="font-family:var(--font-head);font-weight:700;font-size:17px;color:var(--dark);line-height:1.4;flex:1">Kan jeg stoppe n&aring;r jeg vil?</span>
+          <div class="faq-icon" style="width:28px;height:28px;min-width:28px;background:var(--primary-subtle);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .25s;color:var(--primary)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </button>
+        <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height .35s ease">
+          <div style="padding:0 24px 22px;font-size:15px;color:var(--muted);line-height:1.75">Ja. Der er ingen binding overhovedet. Du betaler m&aring;ned for m&aring;ned og kan stoppe n&aring;r det passer dig &mdash; uden varsel og uden forklaring. Det eneste engangsbetalingen d&aelig;kker er vores tid til at s&aelig;tte systemet op med dig.</div>
+        </div>
+      </div>
+
+      <!-- Item 6 — Guarantee (special styling) -->
+      <div class="faq-item faq-guarantee" style="background:var(--primary-subtle);border:1px solid var(--border);border-left:4px solid var(--primary);border-radius:16px;overflow:hidden;transition:box-shadow .2s">
+        <button class="faq-btn" style="display:flex;justify-content:space-between;align-items:center;width:100%;padding:22px 24px;background:none;border:none;cursor:pointer;text-align:left;gap:16px">
+          <span style="font-family:var(--font-head);font-weight:700;font-size:17px;color:var(--dark);line-height:1.4;flex:1">Hvad hvis jeg ikke sparer tid &mdash; betaler jeg alligevel?</span>
+          <div class="faq-icon" style="width:28px;height:28px;min-width:28px;background:var(--primary-subtle);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .25s;color:var(--primary)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </button>
+        <div class="faq-answer" style="max-height:0;overflow:hidden;transition:max-height .35s ease">
+          <div style="padding:0 24px 22px;font-size:15px;color:var(--muted);line-height:1.75">Nej. Det er vores garanti: sparer du ikke tid p&aring; dit f&oslash;rste tilbud, betaler du ikke en krone. Vi er s&aring; sikre p&aring; at Slate virker, at vi b&aelig;rer hele risikoen selv. Du skal ikke tro p&aring; os &mdash; du skal bare pr&oslash;ve det.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CTA below FAQ -->
+    <div style="text-align:center;margin-top:52px" class="fade-in" style="transition-delay:.2s">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+        <a href="booking.html#start" style="background:var(--primary);color:white;border:none;padding:15px 36px;border-radius:50px;font-size:16px;font-weight:600;font-family:var(--font-head);cursor:pointer;transition:all .2s;display:inline-block" onmouseover="this.style.background='var(--primary-light)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='var(--primary)';this.style.transform='translateY(0)'">Kom i gang nu &rarr;</a>
+        <a href="booking.html#intro" style="background:transparent;border:1.5px solid var(--primary);color:var(--primary);padding:12px 30px;border-radius:50px;font-size:15px;font-weight:500;cursor:pointer;transition:all .2s;display:inline-block" onmouseover="this.style.background='var(--primary-subtle)'" onmouseout="this.style.background='transparent'">Book gratis intro p&aring; 30 min.</a>
+      </div>
+      <p style="font-size:13px;color:var(--muted);font-style:italic;text-align:center;margin-top:14px">Sparer du ikke tid p&aring; dit f&oslash;rste tilbud &mdash; betaler du ikke en krone.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRICING ===== -->
+<section class="pricing-sec" id="priser">
+  <div class="inner">
+    <div class="fade-in">
+      <div class="label-pill-dark">Pris</div>
+      <h2 class="pricing-h2">&Eacute;n samlet pris. Ingen overraskelser.</h2>
+      <p class="pricing-sub">Alt er inkluderet fra dag &eacute;t. Vi s&aelig;tter det hele op. Du g&oslash;r ingenting.</p>
+    </div>
+    <div class="price-card fade-in" style="transition-delay:.15s">
+      <!-- Billing toggle -->
+      <div style="display:flex;background:rgba(255,255,255,.12);border-radius:50px;padding:4px;margin-bottom:24px;width:fit-content;margin-left:auto;margin-right:auto">
+        <button id="toggle-monthly" style="padding:8px 20px;border-radius:50px;border:none;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;font-family:var(--font-body)">M&aring;nedlig</button>
+        <button id="toggle-yearly" style="padding:8px 20px;border-radius:50px;border:none;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;font-family:var(--font-body)">&#197;rlig</button>
+      </div>
+      <div style="text-align:center"><span class="price-badge" id="price-badge">Alt inkluderet fra dag &eacute;t</span></div>
+      <div class="price-title">Slate &mdash; komplet pakke</div>
+      <div class="price-desc" id="price-desc">Ops&aelig;tning + m&aring;nedligt abonnement</div>
+      <div id="price-display"></div>
+      <ul class="price-feats">
+        <li class="price-feat"><span class="feat-check">&#10003;</span>45&ndash;60 min. opstartsm&oslash;de &mdash; vi g&oslash;r alt arbejdet</li>
+        <li class="price-feat"><span class="feat-check">&#10003;</span>Vi uploader dine historiske sager</li>
+        <li class="price-feat"><span class="feat-check">&#10003;</span>Vi kobler dit tilbudssystem automatisk op</li>
+        <li class="price-feat"><span class="feat-check">&#10003;</span>Ubegr&aelig;nset kalkulationer hver m&aring;ned</li>
+        <li class="price-feat"><span class="feat-check">&#10003;</span>Foto-upload af kvitteringer &mdash; systemet l&aelig;ser dem</li>
+        <li class="price-feat"><span class="feat-check">&#10003;</span>Systemet l&aelig;rer og bliver klogere over tid</li>
+      </ul>
+      <a id="price-cta-btn" href="" class="price-cta"></a>
+      <p class="price-note" id="price-note"></p>
+      <p style="font-size:13px;color:rgba(255,255,255,.6);font-style:italic;text-align:center;margin-top:8px">Sparer du ikke tid p&aring; dit f&oslash;rste tilbud &mdash; betaler du ikke en krone.</p>
+    </div>
+    <p class="price-bottom fade-in" id="price-below-card" style="transition-delay:.2s"></p>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIALS ===== -->
+<section class="testi-sec sec">
+  <div class="inner">
+    <div class="fade-in">
+      <div class="label-pill">Hvad de siger</div>
+      <h2 style="font-size:clamp(28px,4vw,46px);letter-spacing:-1px;color:var(--dark);margin-bottom:14px">Fra h&aring;ndv&aelig;rkere der bruger det</h2>
+      <p style="color:var(--muted);max-width:460px;margin-bottom:52px;line-height:1.6">Rigtige mestres erfaringer med Slate i hverdagen.</p>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card fade-in" style="transition-delay:.1s">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&ldquo;Jeg lavede et tilbud p&aring; 95.000 kr. ude hos kunden p&aring; 10 minutter. Normalt sidder jeg 3 timer om aftenen. Det er ikke til at forst&aring; at det virker s&aring; godt.&rdquo;</p>
+        <div class="testi-author">
+          <div class="testi-av" style="background:#1B6B5A">SK</div>
+          <div>
+            <div class="testi-name">S&oslash;ren K.</div>
+            <div class="testi-role">VVS-mester &middot; 6 ansatte</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fade-in" style="transition-delay:.2s">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&ldquo;Systemet minder mig om at den type sag altid tager 20% mere tid end jeg regner med. Det har allerede sparet mig for et stort tab.&rdquo;</p>
+        <div class="testi-author">
+          <div class="testi-av" style="background:#3E7BC4">ML</div>
+          <div>
+            <div class="testi-name">Mads L.</div>
+            <div class="testi-role">T&oslash;mrermester &middot; 4 ansatte</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fade-in" style="transition-delay:.3s">
+        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">&ldquo;De satte det hele op p&aring; en time. Vi beh&oslash;vede ikke g&oslash;re noget selv. F&oslash;rste dag brugte vi det til to tilbud. S&aring; enkelt er det.&rdquo;</p>
+        <div class="testi-author">
+          <div class="testi-av" style="background:#1C2B36">LN</div>
+          <div>
+            <div class="testi-name">Lars N.</div>
+            <div class="testi-role">Malermester &middot; 8 ansatte</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BOTTOM CTA ===== -->
+<section class="cta-sec" id="kontakt">
+  <div class="cta-circle"></div>
+  <div class="cta-inner fade-in">
+    <h2 class="cta-h2">Klar til dit f&oslash;rste tilbud p&aring; 2 minutter?</h2>
+    <p class="cta-body">Vi ringer dig op, aftaler et tidspunkt og s&aelig;tter det hele op for dig. Du g&oslash;r ingenting.</p>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:36px">
+      <div style="display:flex;flex-direction:column;align-items:center">
+        <a href="mailto:hej@kalku.ai?subject=Slate%20opstart" class="btn-white" style="transition:all .2s">Kom i gang nu &rarr;</a>
+        <span style="font-size:12px;color:rgba(255,255,255,.55);margin-top:4px;margin-bottom:10px">4.995 kr. i ops&aelig;tning + 1.495 kr./mdr. &mdash; ingen binding</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center">
+        <a href="mailto:hej@kalku.ai?subject=Gratis%20demo%20Slate" style="background:transparent;border:1.5px solid rgba(255,255,255,.35);color:#fff;padding:14px 36px;border-radius:50px;font-size:15px;font-weight:500;cursor:pointer;transition:all .2s;display:inline-block">Book gratis intro</a>
+        <span style="font-size:12px;color:rgba(255,255,255,.55);margin-top:4px">Vi viser dig hvordan det virker &mdash; ingen forpligtelse, ingen data</span>
+      </div>
+    </div>
+    <span style="display:block;margin-top:24px;font-size:15px;color:rgba(255,255,255,.75);font-style:italic;text-align:center">Sparer du ikke tid p&aring; dit f&oslash;rste tilbud &mdash; betaler du ikke en krone.</span>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <span class="footer-logo">Slate</span>
+  <nav class="footer-links">
+    <a href="#hvordan" class="footer-link">S&aring;dan virker det</a>
+    <a href="#igang" class="footer-link">Kom i gang</a>
+    <a href="#priser" class="footer-link">Priser</a>
+    <a href="#kontakt" class="footer-link">Kontakt</a>
+  </nav>
+  <span class="footer-copy">&copy; 2025 Slate &middot; hej@kalku.ai</span>
+</footer>
+
+<!-- ===== CHAT WIDGET ===== -->
+<div class="chat-widget" id="chatWidget">
+  <div class="chat-panel hidden" id="chatPanel">
+    <div class="chat-head">
+      <div class="chat-head-left">
+        <div class="chat-head-av">S</div>
+        <div>
+          <div class="chat-head-name">Slate Support</div>
+          <div class="chat-head-sub">Svar inden for 30 sek.</div>
+        </div>
+      </div>
+      <button class="chat-close" id="chatClose">&times;</button>
+    </div>
+    <div class="chat-msgs" id="chatMsgs"></div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chatInput" type="text" placeholder="Stil os et sp&oslash;rgsm&aring;l...">
+      <button class="chat-send" id="chatSend" disabled>
+        <svg width="14" height="14" viewBox="0 0 16 16"><path d="M2 8L14 2L8 14L7 9L2 8Z" fill="white"/></svg>
+      </button>
+    </div>
+  </div>
+  <button class="chat-btn" id="chatToggle" aria-label="&Aring;bn support chat">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+// ===== PRICING TOGGLE =====
+var monthlyBtn = document.getElementById('toggle-monthly');
+var yearlyBtn = document.getElementById('toggle-yearly');
+
+function setMonthly() {
+  monthlyBtn.style.background = 'white';
+  monthlyBtn.style.color = 'var(--primary)';
+  yearlyBtn.style.background = 'transparent';
+  yearlyBtn.style.color = 'rgba(255,255,255,0.7)';
+  document.getElementById('price-badge').textContent = 'Alt inkluderet fra dag \u00e9t';
+  document.getElementById('price-desc').innerHTML = 'Ops\u00e6tning + m\u00e5nedligt abonnement';
+  document.getElementById('price-display').innerHTML =
+    '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px">' +
+      '<span style="font-family:var(--font-head);font-weight:800;font-size:36px;color:white">4.995 kr.</span>' +
+      '<span style="color:rgba(255,255,255,0.65);font-size:13px">ops\u00e6tning \u00b7 betales \u00e9n gang \u00b7 ex. moms</span>' +
+    '</div>' +
+    '<div style="height:1px;background:rgba(255,255,255,0.15);margin:14px 0"></div>' +
+    '<div style="display:flex;align-items:baseline;gap:10px">' +
+      '<span style="font-family:var(--font-head);font-weight:800;font-size:36px;color:white">1.495 kr.</span>' +
+      '<span style="color:rgba(255,255,255,0.65);font-size:13px">pr. m\u00e5ned \u00b7 ingen binding \u00b7 ex. moms</span>' +
+    '</div>';
+  document.getElementById('price-cta-btn').textContent = 'Kom i gang nu \u2192';
+  document.getElementById('price-cta-btn').href = 'mailto:hej@kalku.ai?subject=Slate%20opstart%20%E2%80%93%20m%C3%A5nedlig';
+  document.getElementById('price-note').innerHTML = 'Ingen forpligtelse. Vi ringer dig op og er \u00e6rlige om det passer til din forretning.';
+  document.getElementById('price-below-card').innerHTML = 'Samlet f\u00f8rste \u00e5r: 22.935 kr. ex. moms \u00b7 Break-even p\u00e5 den f\u00f8rste sparede aftentime';
+}
+
+function setYearly() {
+  yearlyBtn.style.background = 'white';
+  yearlyBtn.style.color = 'var(--primary)';
+  monthlyBtn.style.background = 'transparent';
+  monthlyBtn.style.color = 'rgba(255,255,255,0.7)';
+  document.getElementById('price-badge').textContent = 'Spar 4.995 kr. \u2014 ops\u00e6tning gratis';
+  document.getElementById('price-desc').innerHTML = '\u00c9t \u00e5rs abonnement \u2014 ops\u00e6tning er gratis';
+  document.getElementById('price-display').innerHTML =
+    '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px">' +
+      '<span style="font-family:var(--font-head);font-weight:800;font-size:42px;color:white">17.940 kr.</span>' +
+      '<span style="color:rgba(255,255,255,0.65);font-size:13px">pr. \u00e5r \u00b7 ex. moms</span>' +
+    '</div>' +
+    '<div style="color:rgba(255,255,255,0.45);font-size:12px;text-decoration:line-through;margin-bottom:8px">Normalt 4.995 kr. + 17.940 kr. = 22.935 kr.</div>' +
+    '<div style="display:inline-block;background:rgba(255,255,255,0.15);color:white;padding:5px 14px;border-radius:50px;font-size:13px;font-weight:500">Du sparer 4.995 kr. \u2014 ops\u00e6tning er gratis</div>';
+  document.getElementById('price-cta-btn').textContent = 'V\u00e6lg \u00e5rlig aftale \u2192';
+  document.getElementById('price-cta-btn').href = 'mailto:hej@kalku.ai?subject=Slate%20opstart%20%E2%80%93%20%C3%A5rlig';
+  document.getElementById('price-note').innerHTML = 'Betal for et helt \u00e5r og spar ops\u00e6tningsgebyret. Vi ringer dig op og bekr\u00e6fter.';
+  document.getElementById('price-below-card').innerHTML = 'Samlet f\u00f8rste \u00e5r: 17.940 kr. ex. moms \u00b7 Du sparer 4.995 kr. i forhold til m\u00e5nedlig betaling';
+}
+
+monthlyBtn.addEventListener('click', setMonthly);
+yearlyBtn.addEventListener('click', setYearly);
+setMonthly();
+
+// ===== FAQ ACCORDION =====
+var faqItems = document.querySelectorAll('.faq-item');
+faqItems.forEach(function(item){
+  var btn = item.querySelector('.faq-btn');
+  var answer = item.querySelector('.faq-answer');
+  var icon = item.querySelector('.faq-icon');
+  btn.addEventListener('click', function(){
+    var isOpen = item.classList.contains('open');
+    faqItems.forEach(function(i){
+      i.classList.remove('open');
+      i.querySelector('.faq-answer').style.maxHeight = '0';
+      i.querySelector('.faq-icon').innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+      i.querySelector('.faq-icon').style.background = 'var(--primary-subtle)';
+      i.querySelector('.faq-icon').style.color = 'var(--primary)';
+      i.style.boxShadow = 'none';
+      if(!i.classList.contains('faq-guarantee')){
+        i.style.background = 'white';
+      }
+    });
+    if(!isOpen){
+      item.classList.add('open');
+      answer.style.maxHeight = '400px';
+      icon.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+      icon.style.background = 'var(--primary)';
+      icon.style.color = 'white';
+      item.style.boxShadow = '0 4px 20px rgba(0,0,0,0.07)';
+      item.style.background = 'white';
+    }
+  });
+});
+
+// ===== INTERSECTION OBSERVER =====
+(function(){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}
+    });
+  },{threshold:.12});
+  document.querySelectorAll('.fade-in').forEach(function(el){io.observe(el);});
+})();
+
+// ===== CHAT WIDGET =====
+var ANTHROPIC_API_KEY = 'YOUR_API_KEY_HERE';
+
+var SYSTEM_PROMPT = 'Du er en venlig og aerlig salgsassistent for Slate. Du svarer altid paa dansk. Hold svar under 80 ord medmindre spoergsmaalet kraever mere. Du er ikke en klassisk saelger - du er hjaelpsom og direkte.\n\nOm Slate:\nSlate er et AI-drevet kalkulations- og tilbudsvaerktoej til danske haandvaerksvirksomheder med 2-15 ansatte. VVS, el, toemrer, maler, murer, tagdaekning og alle andre fag.\n\nKerneproduktet: Mesteren skriver i naturligt sprog (som en sms) og faar et tilbudsestimat baseret paa hans egne historiske sager. Systemet laerer og forbedres for hvert projekt.\n\nSystemet goer:\n- Kalkulation paa 2 minutter via chat paa mobilen\n- Henter data fra virksomhedens egne historiske sager automatisk\n- Foto-upload af kvitteringer - systemet laesar dem via AI\n- Efterkalkulation: mester siger svendetimer i bilen, tager foto af kvittering\n- Advarer om typiske fejlmoenstre\n- Kobler automatisk op mod e-conomic, Billy, Dinero, Minuba\n\nOnboarding: 45-60 min opstartsmoede. Vi saetter alt op. Kunden goer ingenting.\n\nPris:\n- Opsaetning: 4.995 kr. ex. moms (een gang)\n- Maanedligt abonnement: 1.495 kr. ex. moms, ingen binding\n- Samlet foerste aar: 22.935 kr. ex. moms\n- Break-even: foerste sparede aftentime\n\nROI: En typisk SMV med 5 ansatte og 150-220 tilbud/aar bruger 235.000-450.000 kr. i alternativomkostninger paa tilbudsgivning. Slate koster 22.935 kr. foerste aar. ROI: 10-20x.\n\nKontakt: hej@kalku.ai - vi ringer inden for 24 timer paa hverdage.';
+
+var chatHistory = [];
+var chatOpen = false;
+var welcomeSent = false;
+
+var panel = document.getElementById('chatPanel');
+var msgs = document.getElementById('chatMsgs');
+var input = document.getElementById('chatInput');
+var sendBtn = document.getElementById('chatSend');
+var toggleBtn = document.getElementById('chatToggle');
+var closeBtn = document.getElementById('chatClose');
+
+function ts(){
+  var d = new Date();
+  return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
+}
+
+function addMsg(text,role){
+  var div = document.createElement('div');
+  div.className = role==='user'?'cm-user':'cm-ai';
+  div.innerHTML = text+'<span class="cm-ts">'+ts()+'</span>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function showTyping(){
+  var div = document.createElement('div');
+  div.className = 'cm-ai';
+  div.id = 'typingIndicator';
+  div.innerHTML = '<div class="cm-typing"><span class="typing-dot" style="animation-delay:0s"></span><span class="typing-dot" style="animation-delay:.15s"></span><span class="typing-dot" style="animation-delay:.3s"></span></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping(){
+  var t = document.getElementById('typingIndicator');
+  if(t) t.remove();
+}
+
+async function sendMessage(){
+  var text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+  sendBtn.disabled = true;
+  input.disabled = true;
+
+  addMsg(text,'user');
+  chatHistory.push({role:'user',content:text});
+  showTyping();
+
+  try{
+    var res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':ANTHROPIC_API_KEY,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:500,
+        system:SYSTEM_PROMPT,
+        messages:chatHistory
+      })
+    });
+    var data = await res.json();
+    var reply = data.content[0].text;
+    chatHistory.push({role:'assistant',content:reply});
+    removeTyping();
+    addMsg(reply,'ai');
+  } catch(err){
+    removeTyping();
+    addMsg('Ups &ndash; noget gik galt. Skriv til hej@kalku.ai &#128591;','ai');
+  }
+
+  input.disabled = false;
+  sendBtn.disabled = false;
+  input.focus();
+}
+
+toggleBtn.addEventListener('click',function(){
+  chatOpen = !chatOpen;
+  panel.classList.toggle('hidden',!chatOpen);
+  if(chatOpen && !welcomeSent){
+    welcomeSent = true;
+    setTimeout(function(){
+      addMsg('Hej! &#128075; Jeg kan fort&aelig;lle dig alt om Slate. Hvad vil du gerne vide?','ai');
+    },500);
+  }
+  if(chatOpen) setTimeout(function(){input.focus();},250);
+});
+
+closeBtn.addEventListener('click',function(){
+  chatOpen = false;
+  panel.classList.add('hidden');
+});
+
+input.addEventListener('input',function(){
+  sendBtn.disabled = !input.value.trim();
+});
+
+input.addEventListener('keydown',function(e){
+  if(e.key==='Enter' && !e.shiftKey && !sendBtn.disabled){
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+sendBtn.addEventListener('click',sendMessage);
+</script>
+</body>
+</html>
