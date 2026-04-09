@@ -5,7 +5,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%231B6B5A'/%3E%3Ctext x='50' y='71' font-size='64' font-family='Arial%2Csans-serif' font-weight='bold' fill='white' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
 <title>Slate &ndash; Lav tilbud p&aring; 2 minutter ude hos kunden</title>
-<meta name="description" content="Slate hj&aelig;lper danske h&aring;ndv&aelig;rksmestre med at lave pr&aelig;cise tilbud p&aring; 2 minutter &ndash; direkte fra telefonen. Baseret p&aring; dine egne sager.">
+<meta name="description" content="AI-kalkulation til håndværkere. Lav præcise tilbud på 2 minutter ude hos kunden. Virker for VVS, el, tømrer, maler, murer og tagdækning.">
+<meta property="og:title" content="Slate – Lav tilbud på 2 minutter ude hos kunden">
+<meta property="og:description" content="AI-kalkulation til håndværkere. Skriv til Slate på din telefon — få et præcist tilbudsestimat på 30 sekunder baseret på dine egne sager.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://slate.nu">
+<meta property="og:site_name" content="Slate">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Slate – Lav tilbud på 2 minutter ude hos kunden">
+<link rel="canonical" href="https://slate.nu">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet">
@@ -566,6 +574,8 @@ img{max-width:100%}
 </style>
 </head>
 <body>
+<div id="cookie-banner" style="position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;color:#fff;padding:16px 24px;z-index:9999;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;font-size:14px;"><span>Vi bruger cookies til at forbedre din oplevelse. <a href="#" style="color:#4ade80;text-decoration:underline;">Læs mere</a></span><button onclick="acceptCookies()" style="background:#1B6B5A;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:600;white-space:nowrap;">Accepter</button></div>
+<script>function acceptCookies(){document.getElementById("cookie-banner").style.display="none";localStorage.setItem("cookiesOk","1");}window.addEventListener("DOMContentLoaded",function(){if(localStorage.getItem("cookiesOk")){document.getElementById("cookie-banner").style.display="none";}});</script>
 
 <!-- ===== NAV ===== -->
 <nav class="nav">
@@ -596,8 +606,8 @@ img{max-width:100%}
       <h1 class="hero-h1">Lav tilbud p&aring; 2 minutter &ndash; ude hos kunden</h1>
       <p class="hero-sub">Du skriver til Slate p&aring; din telefon. Den finder tallene fra dine egne sager og giver dig et pr&aelig;cist estimat p&aring; 30 sekunder. Du sender tilbuddet samme dag. Aldrig mere 3 timer ved k&oslash;kkenbordet om aftenen.</p>
       <div class="hero-ctas">
-        <a href="#priser" class="btn-primary">Kom i gang nu &rarr;</a>
-        <a href="#kontakt" class="hero-link">Book gratis intro &darr;</a>
+        <a href="#priser" style="display:inline-flex;align-items:center;background:#1B6B5A;color:#fff;font-weight:700;padding:16px 36px;border-radius:10px;font-size:16px;text-decoration:none;box-shadow:0 4px 20px rgba(27,107,90,.28);transition:all .2s;">Kom i gang nu &rarr;</a>
+        <a href="#kontakt" style="display:inline-flex;align-items:center;background:transparent;border:2px solid #1B6B5A;color:#1B6B5A;font-weight:600;padding:14px 32px;border-radius:10px;font-size:15px;text-decoration:none;transition:all .2s;">Book gratis intro</a>
       </div>
       <span style="display:block;margin-top:16px;font-size:14px;color:var(--muted);font-style:italic">Sparer du ikke tid p&aring; dit f&oslash;rste tilbud &mdash; betaler du ikke en krone.</span>
     </div>
@@ -979,6 +989,7 @@ img{max-width:100%}
       <p class="pricing-sub">Alt er inkluderet fra dag &eacute;t. Vi s&aelig;tter det hele op. Du g&oslash;r ingenting.</p>
     </div>
     <div class="price-card fade-in" style="transition-delay:.15s">
+      <div id="mest-populaer-badge" style="display:none;background:#1B6B5A;color:#fff;font-size:12px;font-weight:700;letter-spacing:0.5px;padding:4px 14px;border-radius:20px;display:none;margin-bottom:12px;text-transform:uppercase;text-align:center;">Mest populær</div>
       <!-- Billing toggle -->
       <div style="display:flex;background:rgba(255,255,255,.12);border-radius:50px;padding:4px;margin-bottom:24px;width:fit-content;margin-left:auto;margin-right:auto">
         <button id="toggle-monthly" style="padding:8px 20px;border-radius:50px;border:none;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;font-family:var(--font-body)">M&aring;nedlig</button>
@@ -1005,50 +1016,7 @@ img{max-width:100%}
 </section>
 
 <!-- ===== TESTIMONIALS ===== -->
-<section class="testi-sec sec">
-  <div class="inner">
-    <div class="fade-in">
-      <div class="label-pill">Hvad de siger</div>
-      <h2 style="font-size:clamp(28px,4vw,46px);letter-spacing:-1px;color:var(--dark);margin-bottom:14px">Fra h&aring;ndv&aelig;rkere der bruger det</h2>
-      <p style="color:var(--muted);max-width:460px;margin-bottom:52px;line-height:1.6">Rigtige mestres erfaringer med Slate i hverdagen.</p>
-    </div>
-    <div class="testi-grid">
-      <div class="testi-card fade-in" style="transition-delay:.1s">
-        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p class="testi-quote">&ldquo;Jeg lavede et tilbud p&aring; 95.000 kr. ude hos kunden p&aring; 10 minutter. Normalt sidder jeg 3 timer om aftenen. Det er ikke til at forst&aring; at det virker s&aring; godt.&rdquo;</p>
-        <div class="testi-author">
-          <div class="testi-av" style="background:#1B6B5A">SK</div>
-          <div>
-            <div class="testi-name">S&oslash;ren K.</div>
-            <div class="testi-role">VVS-mester &middot; 6 ansatte</div>
-          </div>
-        </div>
-      </div>
-      <div class="testi-card fade-in" style="transition-delay:.2s">
-        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p class="testi-quote">&ldquo;Systemet minder mig om at den type sag altid tager 20% mere tid end jeg regner med. Det har allerede sparet mig for et stort tab.&rdquo;</p>
-        <div class="testi-author">
-          <div class="testi-av" style="background:#3E7BC4">ML</div>
-          <div>
-            <div class="testi-name">Mads L.</div>
-            <div class="testi-role">T&oslash;mrermester &middot; 4 ansatte</div>
-          </div>
-        </div>
-      </div>
-      <div class="testi-card fade-in" style="transition-delay:.3s">
-        <div class="testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <p class="testi-quote">&ldquo;De satte det hele op p&aring; en time. Vi beh&oslash;vede ikke g&oslash;re noget selv. F&oslash;rste dag brugte vi det til to tilbud. S&aring; enkelt er det.&rdquo;</p>
-        <div class="testi-author">
-          <div class="testi-av" style="background:#1C2B36">LN</div>
-          <div>
-            <div class="testi-name">Lars N.</div>
-            <div class="testi-role">Malermester &middot; 8 ansatte</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+<section style="background:#f8faf9;padding:60px 24px;text-align:center;"><div style="max-width:640px;margin:0 auto;"><div style="font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#1B6B5A;margin-bottom:24px;">Tidlige brugere</div><blockquote style="font-size:clamp(18px,2.5vw,24px);font-weight:500;color:#1a1a1a;line-height:1.5;font-style:italic;margin:0 0 24px 0;">"Vi er i gang med at samle de første erfaringer fra vores pilotkunder. Vil du være en af de første?"</blockquote><a href="#kontakt" style="display:inline-block;background:#1B6B5A;color:#fff;padding:14px 32px;border-radius:10px;font-weight:700;text-decoration:none;font-size:16px;">Bliv pilotbruger →</a></div></section>
 
 <!-- ===== BOTTOM CTA ===== -->
 <section class="cta-sec" id="kontakt">
@@ -1066,6 +1034,7 @@ img{max-width:100%}
         <span style="font-size:12px;color:rgba(255,255,255,.55);margin-top:4px">Vi viser dig hvordan det virker &mdash; ingen forpligtelse, ingen data</span>
       </div>
     </div>
+    <p style="margin-top:12px;font-size:15px;color:rgba(255,255,255,.8);">Eller ring direkte: <a href="tel:+4560597236" style="color:#4ade80;font-weight:600;">+45 60 59 72 36</a></p>
     <span style="display:block;margin-top:24px;font-size:15px;color:rgba(255,255,255,.75);font-style:italic;text-align:center">Sparer du ikke tid p&aring; dit f&oslash;rste tilbud &mdash; betaler du ikke en krone.</span>
   </div>
 </section>
@@ -1079,7 +1048,10 @@ img{max-width:100%}
     <a href="#priser" class="footer-link">Priser</a>
     <a href="#kontakt" class="footer-link">Kontakt</a>
   </nav>
-  <span class="footer-copy">&copy; 2025 Slate &middot; hej@slate.nu</span>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right">
+    <span class="footer-copy"><a href="mailto:hej@slate.nu" style="color:var(--muted);">hej@slate.nu</a> &middot; <a href="tel:+4560597236" style="color:var(--muted);">+45 60 59 72 36</a></span>
+    <span class="footer-copy">&copy; 2025 Slate</span>
+  </div>
 </footer>
 
 <!-- ===== CHAT WIDGET ===== -->
@@ -1116,6 +1088,7 @@ var monthlyBtn = document.getElementById('toggle-monthly');
 var yearlyBtn = document.getElementById('toggle-yearly');
 
 function setMonthly() {
+  document.getElementById('mest-populaer-badge').style.display = 'none';
   monthlyBtn.style.background = 'white';
   monthlyBtn.style.color = 'var(--primary)';
   yearlyBtn.style.background = 'transparent';
@@ -1139,6 +1112,7 @@ function setMonthly() {
 }
 
 function setYearly() {
+  document.getElementById('mest-populaer-badge').style.display = 'block';
   yearlyBtn.style.background = 'white';
   yearlyBtn.style.color = 'var(--primary)';
   monthlyBtn.style.background = 'transparent';
@@ -1296,5 +1270,6 @@ input.addEventListener('keydown',function(e){
 
 sendBtn.addEventListener('click',sendMessage);
 </script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Slate","description":"AI-kalkulationsværktøj til håndværkere. Lav præcise tilbud på 2 minutter.","applicationCategory":"BusinessApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"1495","priceCurrency":"DKK"},"url":"https://slate.nu"}</script>
 </body>
 </html>
