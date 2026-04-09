@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Book gratis opstartsmøde – Slate</title>
+<meta name="description" content="Book et gratis opstartsmøde med Slate. Vi ringer dig op, sætter systemet op og du laver dit første tilbud inden mødet slutter. Ingen binding.">
+<meta property="og:title" content="Book gratis opstartsmøde – Slate">
+<meta property="og:description" content="Book et gratis opstartsmøde. Vi ringer dig op inden for 1 arbejdsdag og sætter det hele op for dig.">
+<meta property="og:type" content="website">
+<meta name="robots" content="noindex, follow">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%231B6B5A'/><text y='0.9em' font-size='62' x='50' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold' dy='0.1em'>S</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#1B6B5A;
+  --primary-light:#2A8F74;
+  --primary-subtle:#E8F5F1;
+  --dark:#1C2B36;
+  --text:#2D3E4A;
+  --muted:#6B8090;
+  --bg:#F7F8F6;
+  --white:#FFFFFF;
+  --border:rgba(28,43,54,.08);
+  --font-head:'Nunito',sans-serif;
+  --font-body:'Plus Jakarta Sans',sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);font-size:17px;line-height:1.6;overflow-x:hidden;min-height:100vh}
+h1,h2,h3{font-family:var(--font-head);font-weight:800}
+a{text-decoration:none}
+
+/* ===== LAYOUT ===== */
+.page-wrap{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  max-width:1160px;
+  margin:0 auto;
+  padding:48px 24px;
+  gap:64px;
+  align-items:start;
+}
+
+/* ===== TRUST COLUMN ===== */
+.trust-col{
+  position:sticky;
+  top:48px;
+  padding-right:16px;
+}
+
+.logo{
+  font-family:var(--font-head);
+  font-weight:800;
+  font-size:26px;
+  color:var(--primary);
+  letter-spacing:-.5px;
+  margin-bottom:40px;
+  display:block;
+}
+
+.trust-h1{
+  font-size:clamp(28px,3.5vw,40px);
+  letter-spacing:-1px;
+  color:var(--dark);
+  margin-bottom:12px;
+  line-height:1.12;
+}
+
+.trust-sub{
+  font-size:17px;
+  color:var(--muted);
+  margin-bottom:48px;
+  line-height:1.65;
+}
+
+/* Steps */
+.steps-list{
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+  margin-bottom:40px;
+}
+
+.step-item{
+  display:flex;
+  align-items:flex-start;
+  gap:16px;
+}
+
+.step-check{
+  width:32px;
+  height:32px;
+  min-width:32px;
+  background:var(--primary);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  margin-top:2px;
+}
+
+.step-check svg{stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+.step-text{
+  display:flex;
+  flex-direction:column;
+}
+
+.step-label{
+  font-size:11px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  color:var(--primary);
+  margin-bottom:2px;
+}
+
+.step-body{
+  font-size:15px;
+  color:var(--text);
+  font-weight:500;
+  line-height:1.5;
+}
+
+/* Guarantee box */
+.guarantee-box{
+  background:var(--primary);
+  border-radius:16px;
+  padding:24px 28px;
+  margin-bottom:36px;
+}
+
+.guarantee-text{
+  color:#fff;
+  font-size:17px;
+  font-weight:600;
+  line-height:1.55;
+  font-family:var(--font-head);
+}
+
+/* Contact info */
+.contact-info{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-bottom:24px;
+}
+
+.contact-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:14px;
+  color:var(--muted);
+}
+
+.contact-item a{
+  color:var(--muted);
+  transition:color .2s;
+}
+
+.contact-item a:hover{
+  color:var(--primary);
+}
+
+.back-link{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:14px;
+  color:var(--muted);
+  transition:color .2s;
+}
+
+.back-link:hover{
+  color:var(--primary);
+}
+
+/* ===== FORM COLUMN ===== */
+.form-col{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:40px 36px;
+  box-shadow:0 4px 24px rgba(0,0,0,.05);
+}
+
+.form-label-pill{
+  display:inline-block;
+  font-size:11px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  color:var(--primary);
+  margin-bottom:24px;
+  background:var(--primary-subtle);
+  padding:5px 14px;
+  border-radius:50px;
+}
+
+.form-group{
+  margin-bottom:20px;
+}
+
+.field-label{
+  display:block;
+  font-size:13px;
+  font-weight:500;
+  color:var(--dark);
+  margin-bottom:7px;
+}
+
+.field-label span{
+  color:var(--primary);
+}
+
+.form-field{
+  width:100%;
+  border:1.5px solid #e0e0e0;
+  border-radius:10px;
+  padding:14px 16px;
+  font-size:16px;
+  font-family:var(--font-body);
+  color:var(--text);
+  background:#fff;
+  transition:border-color .2s, box-shadow .2s;
+  appearance:none;
+  -webkit-appearance:none;
+}
+
+.form-field:focus{
+  outline:none;
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(27,107,90,.12);
+}
+
+select.form-field{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B8090' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 16px center;
+  padding-right:40px;
+  cursor:pointer;
+}
+
+textarea.form-field{
+  min-height:110px;
+  resize:vertical;
+}
+
+.submit-btn{
+  display:block;
+  width:100%;
+  background:var(--primary);
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  padding:18px;
+  font-size:18px;
+  font-weight:700;
+  font-family:var(--font-head);
+  cursor:pointer;
+  transition:background .2s, transform .2s, box-shadow .2s;
+  margin-top:8px;
+  box-shadow:0 4px 20px rgba(27,107,90,.25);
+}
+
+.submit-btn:hover{
+  background:var(--primary-light);
+  transform:translateY(-2px);
+  box-shadow:0 8px 28px rgba(27,107,90,.32);
+}
+
+.submit-note{
+  text-align:center;
+  font-size:13px;
+  color:var(--muted);
+  margin-top:12px;
+}
+
+/* Confirmation state */
+.confirm-wrap{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  padding:24px 0;
+  gap:16px;
+}
+
+.confirm-check{
+  width:64px;
+  height:64px;
+  background:var(--primary-subtle);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.confirm-check svg{
+  stroke:var(--primary);
+  fill:none;
+  stroke-width:2.5;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.confirm-title{
+  font-family:var(--font-head);
+  font-weight:800;
+  font-size:22px;
+  color:var(--dark);
+  line-height:1.3;
+}
+
+.confirm-sub{
+  font-size:15px;
+  color:var(--muted);
+  line-height:1.65;
+  max-width:340px;
+}
+
+.confirm-phone{
+  font-size:16px;
+  color:var(--text);
+  font-weight:500;
+}
+
+.confirm-phone a{
+  color:var(--primary);
+  font-weight:600;
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:820px){
+  .page-wrap{
+    grid-template-columns:1fr;
+    padding:32px 20px;
+    gap:40px;
+  }
+
+  .trust-col{
+    position:static;
+    padding-right:0;
+  }
+
+  .form-col{
+    padding:28px 20px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- ===== TRUST COLUMN ===== -->
+  <div class="trust-col">
+    <span class="logo">Slate</span>
+
+    <h1 class="trust-h1">Book dit gratis opstartsmøde</h1>
+    <p class="trust-sub">Vi ringer dig op. Du gør ingenting på forhånd.</p>
+
+    <div class="steps-list">
+      <div class="step-item">
+        <div class="step-check">
+          <svg width="16" height="16" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="step-text">
+          <span class="step-label">Trin 1</span>
+          <span class="step-body">Vi ringer dig op inden for 1 arbejdsdag</span>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-check">
+          <svg width="16" height="16" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="step-text">
+          <span class="step-label">Trin 2</span>
+          <span class="step-body">Vi sætter Slate op med dig på 45 minutter (du gør ingenting)</span>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-check">
+          <svg width="16" height="16" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="step-text">
+          <span class="step-label">Trin 3</span>
+          <span class="step-body">Du laver dit første tilbud inden mødet slutter</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="guarantee-box">
+      <p class="guarantee-text">Sparer du ikke tid på dit første tilbud — betaler du ikke en krone.</p>
+    </div>
+
+    <div class="contact-info">
+      <div class="contact-item">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <a href="mailto:hej@slate.nu">hej@slate.nu</a>
+      </div>
+      <div class="contact-item">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
+        <a href="tel:+4560597236">+45 60 59 72 36</a>
+      </div>
+    </div>
+
+    <a href="index.html" class="back-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Tilbage til forsiden
+    </a>
+  </div>
+
+  <!-- ===== FORM COLUMN ===== -->
+  <div class="form-col">
+    <div id="formWrap">
+      <span class="form-label-pill">Dine oplysninger</span>
+
+      <!-- TODO: Opret gratis konto på formspree.io og erstat FORMSPREE_ID med dit form-ID -->
+      <form id="bookingForm" action="https://formspree.io/f/FORMSPREE_ID" method="POST">
+        <input type="hidden" name="_subject" value="Ny Slate booking fra [navn]">
+        <input type="hidden" name="_next" value="https://slate.nu/tak">
+
+        <div class="form-group">
+          <label class="field-label" for="navn">Navn <span>*</span></label>
+          <input class="form-field" type="text" id="navn" name="navn" required placeholder="Jens Hansen">
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="virksomhed">Virksomhedsnavn <span>*</span></label>
+          <input class="form-field" type="text" id="virksomhed" name="virksomhed" required placeholder="Hansen VVS ApS">
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="fag">Håndværksfag <span>*</span></label>
+          <select class="form-field" id="fag" name="fag" required>
+            <option value="" disabled selected>Vælg dit fag...</option>
+            <option value="VVS">VVS</option>
+            <option value="El">El</option>
+            <option value="Tømrer">Tømrer</option>
+            <option value="Maler">Maler</option>
+            <option value="Murer">Murer</option>
+            <option value="Tagdækning">Tagdækning</option>
+            <option value="Andet">Andet</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="telefon">Telefonnummer <span>*</span></label>
+          <input class="form-field" type="tel" id="telefon" name="telefon" required placeholder="+45 XX XX XX XX">
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="tidspunkt">Hvornår må vi ringe? <span>*</span></label>
+          <select class="form-field" id="tidspunkt" name="tidspunkt" required>
+            <option value="" disabled selected>Hvornår passer det bedst?</option>
+            <option value="Formiddag (8-12)">Formiddag (8–12)</option>
+            <option value="Eftermiddag (12-17)">Eftermiddag (12–17)</option>
+            <option value="Hele dagen">Hele dagen</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="besked">Andet du vil dele med os? <span style="color:var(--muted);font-weight:400">(valgfrit)</span></label>
+          <textarea class="form-field" id="besked" name="besked" placeholder="F.eks. antal ansatte, nuværende system til tilbud, særlige ønsker..."></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn">Book gratis opstartsmøde &rarr;</button>
+        <p class="submit-note">Ingen binding. Vi ringer dig op. Gratis.</p>
+      </form>
+    </div>
+
+    <div class="confirm-wrap" id="confirmWrap">
+      <div class="confirm-check">
+        <svg width="32" height="32" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <p class="confirm-title" id="confirmTitle">Tak! Vi ringer dig op inden for 1 arbejdsdag.</p>
+      <p class="confirm-sub">Vi glæder os til at vise dig Slate og sætte det hele op for dig.</p>
+      <p class="confirm-phone">Har du spørgsmål? Ring på <a href="tel:+4560597236">+45 60 59 72 36</a></p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var form = document.getElementById('bookingForm');
+var formWrap = document.getElementById('formWrap');
+var confirmWrap = document.getElementById('confirmWrap');
+var confirmTitle = document.getElementById('confirmTitle');
+
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  var fornavn = document.getElementById('navn').value.trim().split(' ')[0];
+  var data = new FormData(form);
+
+  // Update hidden subject with actual name
+  data.set('_subject', 'Ny Slate booking fra ' + document.getElementById('navn').value.trim());
+
+  var submitBtn = form.querySelector('.submit-btn');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Sender...';
+
+  fetch(form.action, {
+    method: 'POST',
+    body: data,
+    headers: { 'Accept': 'application/json' }
+  })
+  .then(function(res) {
+    if (res.ok) {
+      formWrap.style.display = 'none';
+      confirmTitle.textContent = 'Tak, ' + fornavn + '! Vi ringer dig op inden for 1 arbejdsdag.';
+      confirmWrap.style.display = 'flex';
+    } else {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Book gratis opstartsmøde →';
+      alert('Der skete en fejl. Prøv igen eller ring til os på +45 60 59 72 36.');
+    }
+  })
+  .catch(function() {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Book gratis opstartsmøde →';
+    alert('Der skete en fejl. Prøv igen eller ring til os på +45 60 59 72 36.');
+  });
+});
+</script>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Service","name":"Gratis opstartsmøde – Slate","description":"Book et gratis opstartsmøde med Slate. Vi sætter AI-kalkulationssystemet op for dig på 45 minutter.","provider":{"@type":"Organization","name":"Slate","url":"https://slate.nu","telephone":"+4560597236","email":"hej@slate.nu"},"offers":{"@type":"Offer","price":"0","priceCurrency":"DKK","description":"Gratis opstartsmøde uden binding"}}
+</script>
+</body>
+</html>
