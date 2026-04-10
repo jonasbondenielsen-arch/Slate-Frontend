@@ -416,11 +416,18 @@
     const mode = params.get('mode');
 
     let messages = [];
-    let sessionId = sessionStorage.getItem('slate_session_id');
-    if (!sessionId) {
-      sessionId = crypto.randomUUID();
-      sessionStorage.setItem('slate_session_id', sessionId);
+    let chatHistory = messages;
+
+    function getOrCreateSessionId() {
+      let id = sessionStorage.getItem('slate_session_id');
+      if (!id) {
+        id = crypto.randomUUID();
+        sessionStorage.setItem('slate_session_id', id);
+      }
+      return id;
     }
+
+    let sessionId = getOrCreateSessionId();
 
     const container = document.getElementById('messagesContainer');
     const welcomeScreen = document.getElementById('welcomeScreen');
@@ -509,18 +516,19 @@
       showTyping();
 
       try {
-        const res = await fetch('/api/chat', {
+        const res = await fetch('/api/hrslate-chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            session_id: sessionId,
-            project_id: projectId,
-            messages: messages.slice(-20)
+            session_id: getOrCreateSessionId(),
+            firm_id: localStorage.getItem('slate_firm_id') || null,
+            project_id: new URLSearchParams(window.location.search).get('project') || null,
+            messages: chatHistory
           })
         });
         const data = await res.json();
         removeTyping();
-        appendMessage('assistant', data.content || data.message || 'Noget gik galt — prøv igen.');
+        appendMessage('assistant', data.response || data.content || data.message || 'Noget gik galt — prøv igen.');
       } catch(e) {
         removeTyping();
         appendMessage('assistant', 'Kunne ikke nå serveren. Tjek forbindelsen og prøv igen.');
