@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#F7F6F2">
+  <title>Hr. Slate — Billeder</title>
+  <link rel="manifest" href="/app/manifest.json">
+  <style>
+    :root {
+      --primary: #1D9E75;
+      --primary-light: #9FE1CB;
+      --dark: #2C2C2A;
+      --dark-2: #444441;
+      --dark-3: #5C5C58;
+      --muted: #888884;
+      --bg: #FFFFFF;
+      --bg-2: #F7F6F2;
+      --bg-3: #EFEDE7;
+      --border: #E5E3DC;
+      --text: #1A1A18;
+      --lilla: #534AB7;
+      --lilla-light: #EEEDFE;
+      --lilla-dark: #3C3489;
+      --blaa-light: #E6F1FB;
+      --blaa-dark: #0C447C;
+      --groen-light: #E1F5EE;
+      --groen-dark: #085041;
+      --coral: #FAECE7;
+      --coral-dark: #712B13;
+      --amber-light: #FAEEDA;
+      --amber: #854F0B;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-2);
+      color: var(--text);
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app-shell { display: flex; flex-direction: column; height: 100%; height: 100dvh; }
+
+    .page-header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(247,246,242,0.95);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top));
+    }
+    .back-btn {
+      width: 44px; height: 44px; border: none; background: transparent;
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--dark-2); flex-shrink: 0; transition: background 0.15s ease;
+    }
+    .back-btn:active { background: var(--bg-3); }
+    .page-title { font-size: 18px; font-weight: 700; color: var(--dark); flex: 1; }
+
+    .upload-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 14px; background: var(--dark); color: var(--primary-light);
+      border: none; border-radius: 12px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all 0.15s ease;
+    }
+    .upload-btn:active { transform: scale(0.95); }
+
+    .scroll-content {
+      flex: 1; overflow-y: auto; overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px;
+      display: flex; flex-direction: column; gap: 20px;
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+
+    /* SAG SEKTION */
+    .case-section {}
+    .case-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .case-name { font-size: 14px; font-weight: 700; color: var(--dark); }
+    .case-meta { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+    .case-upload-btn {
+      display: flex; align-items: center; gap: 4px;
+      padding: 5px 10px; background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--dark-2);
+      cursor: pointer; transition: all 0.15s ease;
+    }
+    .case-upload-btn:active { background: var(--bg-3); }
+
+    /* IMAGE GRID */
+    .img-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+    }
+
+    .img-cell {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--bg-3);
+      cursor: pointer;
+    }
+
+    .img-cell img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.15s ease;
+    }
+    .img-cell:active img { transform: scale(0.96); }
+
+    .img-type-badge {
+      position: absolute; top: 5px; left: 5px;
+      font-size: 9px; font-weight: 700;
+      padding: 2px 5px; border-radius: 4px;
+    }
+    .badge-ref  { background: var(--lilla-light); color: var(--lilla-dark); }
+    .badge-kvit { background: var(--amber-light);  color: var(--amber); }
+    .badge-foto { background: var(--groen-light);  color: var(--groen-dark); }
+
+    .img-add-cell {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      border: 2px dashed var(--border);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 4px; cursor: pointer;
+      color: var(--muted); font-size: 11px;
+      transition: all 0.15s ease;
+    }
+    .img-add-cell:active { background: var(--bg-3); border-color: var(--primary); color: var(--primary); }
+
+    /* EMPTY STATE */
+    .empty-case {
+      border-radius: 10px; border: 2px dashed var(--border);
+      padding: 24px; text-align: center;
+      color: var(--muted); font-size: 13px;
+    }
+
+    /* LIGHTBOX */
+    .lightbox {
+      display: none; position: fixed; inset: 0; z-index: 999;
+      background: rgba(0,0,0,.9);
+      align-items: center; justify-content: center;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 95vw; max-height: 85dvh; border-radius: 12px; object-fit: contain; }
+    .lightbox-close {
+      position: absolute; top: max(16px, env(safe-area-inset-top)); right: 16px;
+      width: 44px; height: 44px; border: none; background: rgba(255,255,255,.15);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: white;
+    }
+
+    input[type=file] { display: none; }
+    button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="page-header">
+      <button class="back-btn" onclick="window.location.href='/app/'" aria-label="Tilbage">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <h1 class="page-title">Billeder</h1>
+      <label class="upload-btn" for="globalUpload">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Upload
+      </label>
+      <input type="file" id="globalUpload" accept="image/*" multiple onchange="handleGlobalUpload(this)">
+    </header>
+
+    <div class="scroll-content" id="caseList"></div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()" aria-label="Luk">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+    <img id="lightboxImg" src="" alt="Billede">
+  </div>
+
+  <script>
+    // Demo data
+    const cases = [
+      {
+        id: 'lyngby', name: 'Tilbygning Lyngby — Larsen', meta: 'Tømrer · 28 kvm',
+        images: [
+          { src: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=70', type: 'foto' },
+          { src: 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?w=400&q=70', type: 'ref' },
+          { src: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400&q=70', type: 'ref' },
+          { src: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=70', type: 'kvit' },
+        ]
+      },
+      {
+        id: 'holte', name: 'Tagudskiftning Holte', meta: 'Tagdækning · 180 kvm',
+        images: [
+          { src: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=70', type: 'foto' },
+          { src: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=70', type: 'kvit' },
+        ]
+      },
+      {
+        id: 'hellerup', name: 'Badeværelse Hellerup — Møller', meta: 'VVS · 9 kvm',
+        images: []
+      },
+    ];
+
+    function renderCases() {
+      const list = document.getElementById('caseList');
+      list.innerHTML = cases.map(c => `
+        <div class="case-section">
+          <div class="case-header">
+            <div>
+              <div class="case-name">${c.name}</div>
+              <div class="case-meta">${c.meta}</div>
+            </div>
+            <label class="case-upload-btn" for="upload-${c.id}">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              Tilføj
+            </label>
+            <input type="file" id="upload-${c.id}" accept="image/*" multiple onchange="handleCaseUpload(this, '${c.id}')">
+          </div>
+          ${c.images.length === 0
+            ? `<div class="empty-case">Ingen billeder endnu — tryk "Tilføj" for at uploade</div>`
+            : `<div class="img-grid">
+                ${c.images.map((img, i) => `
+                  <div class="img-cell" onclick="openLightbox('${img.src}')">
+                    <img src="${img.src}" alt="Billede ${i+1}" loading="lazy">
+                    <span class="img-type-badge badge-${img.type}">${img.type.toUpperCase()}</span>
+                  </div>
+                `).join('')}
+                <label class="img-add-cell" for="upload-${c.id}">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                  Tilføj
+                </label>
+              </div>`
+          }
+        </div>
+      `).join('');
+    }
+
+    function handleCaseUpload(input, caseId) {
+      const c = cases.find(x => x.id === caseId);
+      if (!c || !input.files) return;
+      Array.from(input.files).forEach(file => {
+        const url = URL.createObjectURL(file);
+        c.images.push({ src: url, type: 'foto' });
+      });
+      renderCases();
+    }
+
+    function handleGlobalUpload(input) {
+      if (!input.files) return;
+      // Add to first case or create new
+      if (!cases.length) return;
+      Array.from(input.files).forEach(file => {
+        cases[0].images.push({ src: URL.createObjectURL(file), type: 'foto' });
+      });
+      renderCases();
+    }
+
+    function openLightbox(src) {
+      document.getElementById('lightboxImg').src = src;
+      document.getElementById('lightbox').classList.add('open');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+    }
+
+    // Close on Escape
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+    renderCases();
+  </script>
+</body>
+</html>

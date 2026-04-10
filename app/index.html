@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#FFFFFF">
+  <title>Hr. Slate</title>
+  <link rel="manifest" href="/app/manifest.json">
+  <link rel="apple-touch-icon" href="/favicon.svg">
+  <style>
+    :root {
+      --primary: #1D9E75;
+      --primary-light: #9FE1CB;
+      --dark: #2C2C2A;
+      --dark-2: #444441;
+      --dark-3: #5C5C58;
+      --muted: #888884;
+      --bg: #FFFFFF;
+      --bg-2: #F7F6F2;
+      --bg-3: #EFEDE7;
+      --border: #E5E3DC;
+      --text: #1A1A18;
+      --lilla: #534AB7;
+      --lilla-light: #EEEDFE;
+      --lilla-dark: #3C3489;
+      --blaa: #85B7EB;
+      --blaa-dark: #0C447C;
+      --blaa-light: #E6F1FB;
+      --roed: #A32D2D;
+      --amber: #854F0B;
+      --amber-light: #FAEEDA;
+      --groen-light: #E1F5EE;
+      --groen-dark: #085041;
+      --coral: #FAECE7;
+      --coral-dark: #712B13;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      height: 100dvh;
+    }
+
+    /* HEADER */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      border-bottom: 1px solid var(--border);
+    }
+
+    .app-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--dark);
+      letter-spacing: -0.3px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border: none;
+      background: transparent;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--dark-2);
+      transition: background 0.15s ease;
+    }
+
+    .icon-btn:active { background: var(--bg-3); transform: scale(0.95); }
+
+    .avatar-btn {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: var(--dark);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .avatar-btn:active { transform: scale(0.95); }
+
+    .avatar-initials {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary-light);
+      letter-spacing: 0.3px;
+    }
+
+    /* SCROLLABLE CONTENT */
+    .scroll-content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 100px;
+    }
+
+    /* SHORTCUTS */
+    .shortcuts {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 16px;
+    }
+
+    .shortcut-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 6px;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--dark-2);
+      transition: all 0.15s ease;
+      min-height: 64px;
+    }
+
+    .shortcut-btn:active { transform: scale(0.97); background: var(--bg-3); }
+    .shortcut-btn svg { color: var(--dark-3); }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0 16px;
+    }
+
+    /* RECENT SECTION */
+    .recent-section {
+      padding: 16px;
+    }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    .project-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      cursor: pointer;
+      text-align: left;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+      transition: all 0.15s ease;
+    }
+
+    .project-item:active { transform: scale(0.97); background: var(--bg-2); }
+
+    .project-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--groen-light);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .project-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .project-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .project-meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .project-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .project-amount {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    /* STATUS BADGES */
+    .status-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 7px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .status-kladde   { background: var(--amber-light); color: var(--amber); }
+    .status-sendt    { background: var(--blaa-light);  color: var(--blaa-dark); }
+    .status-godkendt { background: var(--groen-light); color: var(--groen-dark); }
+    .status-igangsat { background: var(--lilla-light); color: var(--lilla-dark); }
+    .status-faerdig  { background: #F1EFE8;            color: var(--dark-2); }
+    .status-efterkalk{ background: var(--coral);       color: var(--coral-dark); }
+
+    .empty-state {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      padding: 32px 16px;
+    }
+
+    /* BOTTOM CTA */
+    .bottom-cta {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 16px;
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+    }
+
+    .new-chat-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 15px 20px;
+      background: var(--dark);
+      color: var(--primary-light);
+      border: none;
+      border-radius: 24px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      min-height: 50px;
+    }
+
+    .new-chat-btn:active { transform: scale(0.97); background: var(--dark-2); }
+
+    /* FOCUS */
+    button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <h1 class="app-title">Hr. Slate</h1>
+      <div class="header-actions">
+        <button class="icon-btn" id="searchBtn" aria-label="Søg">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+        </button>
+        <button class="avatar-btn" id="avatarBtn" aria-label="Profil" onclick="window.location.href='/app/settings.html'">
+          <span class="avatar-initials">JB</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="scroll-content">
+      <section class="shortcuts">
+        <button class="shortcut-btn" onclick="navigateTo('dashboard')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+          </svg>
+          <span>Overblik</span>
+        </button>
+        <button class="shortcut-btn" onclick="navigateTo('images')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>Billeder</span>
+        </button>
+        <button class="shortcut-btn" onclick="navigateTo('templates')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+          </svg>
+          <span>Skabeloner</span>
+        </button>
+        <button class="shortcut-btn" onclick="navigateTo('settings')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>Indstillinger</span>
+        </button>
+      </section>
+
+      <hr class="divider">
+
+      <section class="recent-section">
+        <h2 class="section-label">Seneste</h2>
+        <div id="projectsList"></div>
+      </section>
+    </div>
+
+    <div class="bottom-cta">
+      <button class="new-chat-btn" onclick="navigateTo('chat')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Ny samtale med Hr. Slate
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function navigateTo(screen) {
+      const routes = {
+        'chat': '/app/chat.html',
+        'dashboard': '/app/dashboard.html',
+        'images': '/app/images.html',
+        'settings': '/app/settings.html',
+        'templates': '/app/chat.html'
+      };
+      window.location.href = routes[screen] || '/app/chat.html';
+    }
+
+    async function loadProjects() {
+      const firmId = localStorage.getItem('slate_firm_id');
+      if (!firmId) { renderDemoProjects(); return; }
+      try {
+        const res = await fetch(`/api/projects?firm_id=${firmId}`);
+        const data = await res.json();
+        renderProjects(data.projects || []);
+      } catch(e) { renderDemoProjects(); }
+    }
+
+    function renderDemoProjects() {
+      renderProjects([
+        {sagsnavn:'Tilbygning Lyngby — Larsen',          status:'igangsat',  dato:'I dag',   beloeb:'348.000 kr', meta:'Tømrer · 28 kvm'},
+        {sagsnavn:'Tagudskiftning Holte',                status:'faerdig',   dato:'12. apr', beloeb:'312.500 kr', meta:'Tagdækning · 180 kvm'},
+        {sagsnavn:'Badeværelse Hellerup — Møller',       status:'sendt',     dato:'11. apr', beloeb:'87.500 kr',  meta:'VVS · 9 kvm'},
+        {sagsnavn:'Køkken renovering Charlottenlund',    status:'kladde',    dato:'10. apr', beloeb:'142.000 kr', meta:'Tømrer'},
+        {sagsnavn:'Facade maling Gentofte',              status:'godkendt',  dato:'8. apr',  beloeb:'64.000 kr',  meta:'Maler'},
+      ]);
+    }
+
+    function statusLabel(s) {
+      return {kladde:'Kladde',sendt:'Sendt',godkendt:'Godkendt',igangsat:'Igangsat',faerdig:'Færdig',efterkalk:'Efterkalk.'}[s] || s;
+    }
+
+    function renderProjects(projects) {
+      const el = document.getElementById('projectsList');
+      if (!projects.length) {
+        el.innerHTML = '<p class="empty-state">Ingen sager endnu. Start en ny samtale.</p>';
+        return;
+      }
+      el.innerHTML = projects.map(p => `
+        <button class="project-item" onclick="openProject('${p.id||''}')">
+          <div class="project-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="project-info">
+            <div class="project-name">${p.sagsnavn}</div>
+            <div class="project-meta">${p.meta||''}${p.dato ? ' · '+p.dato : ''}</div>
+          </div>
+          <div class="project-right">
+            ${p.beloeb ? `<div class="project-amount">${p.beloeb}</div>` : ''}
+            <span class="status-badge status-${p.status}">${statusLabel(p.status)}</span>
+          </div>
+        </button>
+      `).join('');
+    }
+
+    function openProject(id) {
+      if (id) window.location.href = `/app/chat.html?project=${id}`;
+      else window.location.href = '/app/chat.html';
+    }
+
+    loadProjects();
+  </script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#F7F6F2">
+  <title>Hr. Slate — Hukommelse</title>
+  <link rel="manifest" href="/app/manifest.json">
+  <style>
+    :root {
+      --primary: #1D9E75;
+      --primary-light: #9FE1CB;
+      --dark: #2C2C2A;
+      --dark-2: #444441;
+      --dark-3: #5C5C58;
+      --muted: #888884;
+      --bg: #FFFFFF;
+      --bg-2: #F7F6F2;
+      --bg-3: #EFEDE7;
+      --border: #E5E3DC;
+      --text: #1A1A18;
+      --roed: #A32D2D;
+      --groen-light: #E1F5EE;
+      --groen-dark: #085041;
+      --lilla: #534AB7;
+      --lilla-light: #EEEDFE;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-2);
+      color: var(--text);
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100dvh;
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+
+    .page-header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(247,246,242,0.95);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top));
+    }
+    .back-btn {
+      width: 44px; height: 44px; border: none; background: transparent;
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--dark-2); flex-shrink: 0; transition: background 0.15s ease;
+    }
+    .back-btn:active { background: var(--bg-3); }
+    .page-title { font-size: 18px; font-weight: 700; color: var(--dark); flex: 1; }
+    .save-btn {
+      padding: 8px 16px; background: var(--primary); color: white;
+      border: none; border-radius: 10px; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.15s ease;
+    }
+    .save-btn:active { transform: scale(0.95); }
+
+    .content { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+
+    .info-box {
+      background: var(--lilla-light); border: 1px solid rgba(83,74,183,.15);
+      border-radius: 16px; padding: 14px;
+      font-size: 13px; color: var(--lilla); line-height: 1.5;
+    }
+
+    .rules-card {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    }
+
+    .rule-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 14px; border-bottom: 1px solid var(--border);
+      transition: background 0.15s ease;
+    }
+    .rule-item:last-child { border-bottom: none; }
+
+    .rule-icon {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: var(--groen-light); display: flex; align-items: center; justify-content: center;
+      color: var(--primary); flex-shrink: 0; margin-top: 1px;
+    }
+
+    .rule-text { flex: 1; font-size: 14px; color: var(--text); line-height: 1.45; }
+    .rule-src  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .rule-del {
+      width: 32px; height: 32px; border: none; background: transparent;
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--muted); flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+    .rule-del:active { background: rgba(163,45,45,.08); color: var(--roed); }
+
+    .add-rule-area {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 16px; padding: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+      display: flex; flex-direction: column; gap: 10px;
+    }
+
+    .add-rule-label { font-size: 13px; font-weight: 600; color: var(--dark-2); }
+
+    textarea {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--bg-2);
+      outline: none;
+      resize: none;
+      min-height: 80px;
+      line-height: 1.5;
+      transition: border-color 0.15s ease;
+    }
+    textarea:focus { border-color: var(--primary); background: var(--bg); }
+
+    .add-rule-btn {
+      align-self: flex-end;
+      padding: 9px 18px; background: var(--dark); color: var(--primary-light);
+      border: none; border-radius: 10px; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.15s ease;
+    }
+    .add-rule-btn:active { transform: scale(0.95); background: var(--dark-2); }
+
+    .toast {
+      position: fixed; bottom: max(24px, env(safe-area-inset-bottom));
+      left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--dark); color: white;
+      padding: 12px 20px; border-radius: 12px;
+      font-size: 14px; font-weight: 500;
+      transition: transform 0.3s ease;
+      pointer-events: none; white-space: nowrap; z-index: 999;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <button class="back-btn" onclick="window.location.href='/app/settings.html'" aria-label="Tilbage">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+    <h1 class="page-title">Slates hukommelse</h1>
+    <button class="save-btn" onclick="saveRules()">Gem</button>
+  </header>
+
+  <div class="content">
+    <div class="info-box">
+      Her styrer du hvad Hr. Slate husker om jeres firma — regler, præferencer og kontekst der gælder for alle samtaler.
+    </div>
+
+    <div class="rules-card" id="rulesList">
+      <!-- Dynamisk -->
+    </div>
+
+    <div class="add-rule-area">
+      <div class="add-rule-label">Tilføj ny regel eller kontekst</div>
+      <textarea id="newRuleInput" placeholder="F.eks. 'Vi bruger altid Rockwool isolering' eller 'Tilbud sendes altid med 14 dages betalingsfrist'"></textarea>
+      <button class="add-rule-btn" onclick="addRule()">Tilføj regel</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Gemt ✓</div>
+
+  <script>
+    const DEL_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+    const CHECK_SVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+    let rules = JSON.parse(localStorage.getItem('slate_rules') || 'null') || [
+      { id: 1, text: 'Vi bruger altid Rockwool isolering fremfor EPS som standard', src: 'Tilføjet manuelt' },
+      { id: 2, text: 'Betalingsbetingelser: 14 dage netto på alle tilbud', src: 'Tilføjet manuelt' },
+      { id: 3, text: 'Timepris stiger altid 3% ved opgaver under 20 timer pga. overhead', src: 'Lært fra historik' },
+    ];
+
+    function renderRules() {
+      const el = document.getElementById('rulesList');
+      if (!rules.length) {
+        el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">Ingen regler endnu</div>';
+        return;
+      }
+      el.innerHTML = rules.map(r => `
+        <div class="rule-item" data-id="${r.id}">
+          <div class="rule-icon">${CHECK_SVG}</div>
+          <div style="flex:1">
+            <div class="rule-text">${r.text}</div>
+            <div class="rule-src">${r.src}</div>
+          </div>
+          <button class="rule-del" onclick="deleteRule(${r.id})" aria-label="Fjern">${DEL_SVG}</button>
+        </div>
+      `).join('');
+    }
+
+    function addRule() {
+      const input = document.getElementById('newRuleInput');
+      const text = input.value.trim();
+      if (!text) return;
+      rules.push({ id: Date.now(), text, src: 'Tilføjet manuelt' });
+      input.value = '';
+      saveRules(true);
+      renderRules();
+    }
+
+    function deleteRule(id) {
+      rules = rules.filter(r => r.id !== id);
+      renderRules();
+    }
+
+    function saveRules(silent = false) {
+      localStorage.setItem('slate_rules', JSON.stringify(rules));
+      if (!silent) showToast('Hukommelse gemt ✓');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    renderRules();
+  </script>
+</body>
+</html>

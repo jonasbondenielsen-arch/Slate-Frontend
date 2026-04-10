@@ -1,0 +1,13 @@
+{
+  "name": "Hr. Slate",
+  "short_name": "Slate",
+  "description": "AI-tilbudsstyring til håndværksmestre",
+  "start_url": "/app/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#2C2C2A",
+  "orientation": "portrait",
+  "icons": [
+    {"src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+  ]
+}

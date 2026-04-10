@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#F7F6F2">
+  <title>Hr. Slate — Firmaprofil</title>
+  <link rel="manifest" href="/app/manifest.json">
+  <style>
+    :root {
+      --primary: #1D9E75;
+      --primary-light: #9FE1CB;
+      --dark: #2C2C2A;
+      --dark-2: #444441;
+      --dark-3: #5C5C58;
+      --muted: #888884;
+      --bg: #FFFFFF;
+      --bg-2: #F7F6F2;
+      --bg-3: #EFEDE7;
+      --border: #E5E3DC;
+      --text: #1A1A18;
+      --roed: #A32D2D;
+      --groen-light: #E1F5EE;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-2);
+      color: var(--text);
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100dvh;
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+
+    .page-header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(247,246,242,0.95);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top));
+    }
+    .back-btn {
+      width: 44px; height: 44px; border: none; background: transparent;
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--dark-2); flex-shrink: 0;
+      transition: background 0.15s ease;
+    }
+    .back-btn:active { background: var(--bg-3); }
+    .page-title { font-size: 18px; font-weight: 700; color: var(--dark); flex: 1; }
+
+    .save-btn {
+      padding: 8px 16px;
+      background: var(--primary);
+      color: white;
+      border: none; border-radius: 10px;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.15s ease;
+    }
+    .save-btn:active { transform: scale(0.95); }
+
+    .content { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+
+    .form-section {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    }
+    .form-section-label {
+      font-size: 11px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 12px 16px 6px;
+    }
+    .form-row {
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+    }
+    .form-row:first-of-type { border-top: none; }
+    .form-label {
+      font-size: 12px; font-weight: 600; color: var(--muted);
+      margin-bottom: 5px; display: block;
+    }
+    input[type=text], input[type=email], input[type=tel], input[type=url], select, textarea {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--bg-2);
+      outline: none;
+      transition: border-color 0.15s ease;
+      -webkit-appearance: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      background: var(--bg);
+    }
+    textarea { resize: vertical; min-height: 80px; }
+
+    .toast {
+      position: fixed; bottom: max(24px, env(safe-area-inset-bottom));
+      left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--dark); color: white;
+      padding: 12px 20px; border-radius: 12px;
+      font-size: 14px; font-weight: 500;
+      transition: transform 0.3s ease;
+      pointer-events: none; white-space: nowrap; z-index: 999;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <button class="back-btn" onclick="window.location.href='/app/settings.html'" aria-label="Tilbage">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+    <h1 class="page-title">Firmaprofil</h1>
+    <button class="save-btn" onclick="saveFirm()">Gem</button>
+  </header>
+
+  <div class="content">
+    <div class="form-section">
+      <div class="form-section-label">Firmaoplysninger</div>
+      <div class="form-row">
+        <label class="form-label" for="firmaNavn">Firmanavn</label>
+        <input type="text" id="firmaNavn" placeholder="Bonde Tømrer A/S">
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="cvr">CVR-nummer</label>
+        <input type="text" id="cvr" placeholder="12345678" maxlength="8">
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="branche">Branche</label>
+        <select id="branche">
+          <option value="">Vælg branche</option>
+          <option value="toem">Tømrer</option>
+          <option value="vvs">VVS</option>
+          <option value="el">El</option>
+          <option value="maler">Maler</option>
+          <option value="murer">Murer</option>
+          <option value="tag">Tagdækning</option>
+          <option value="andet">Andet</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-label">Adresse</div>
+      <div class="form-row">
+        <label class="form-label" for="adresse">Vejnavn og nummer</label>
+        <input type="text" id="adresse" placeholder="Nørregade 12">
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="postnr">Postnummer</label>
+        <input type="text" id="postnr" placeholder="2800" maxlength="4">
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="by">By</label>
+        <input type="text" id="by" placeholder="Kongens Lyngby">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-label">Kontakt</div>
+      <div class="form-row">
+        <label class="form-label" for="kontaktNavn">Kontaktperson</label>
+        <input type="text" id="kontaktNavn" placeholder="Jonas Bonde">
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="email">Email</label>
+        <input type="email" id="email" placeholder="jonas@firma.dk">
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="telefon">Telefon</label>
+        <input type="tel" id="telefon" placeholder="+45 12 34 56 78">
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="website">Website</label>
+        <input type="url" id="website" placeholder="https://firma.dk">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-label">Om firmaet</div>
+      <div class="form-row">
+        <label class="form-label" for="beskrivelse">Kort beskrivelse (vises i tilbud)</label>
+        <textarea id="beskrivelse" placeholder="Vi er et håndværkerfirma der specialiserer os i..."></textarea>
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="ansatte">Antal ansatte</label>
+        <select id="ansatte">
+          <option value="">Vælg</option>
+          <option value="1">Mig selv</option>
+          <option value="2-5">2–5</option>
+          <option value="6-15">6–15</option>
+          <option value="16-50">16–50</option>
+          <option value="50+">50+</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Firmaprofil gemt ✓</div>
+
+  <script>
+    // Load saved data
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = JSON.parse(localStorage.getItem('slate_firm_profile') || '{}');
+      Object.keys(saved).forEach(k => {
+        const el = document.getElementById(k);
+        if (el) el.value = saved[k];
+      });
+    });
+
+    async function saveFirm() {
+      const data = {
+        firmaNavn:    document.getElementById('firmaNavn').value,
+        cvr:          document.getElementById('cvr').value,
+        branche:      document.getElementById('branche').value,
+        adresse:      document.getElementById('adresse').value,
+        postnr:       document.getElementById('postnr').value,
+        by:           document.getElementById('by').value,
+        kontaktNavn:  document.getElementById('kontaktNavn').value,
+        email:        document.getElementById('email').value,
+        telefon:      document.getElementById('telefon').value,
+        website:      document.getElementById('website').value,
+        beskrivelse:  document.getElementById('beskrivelse').value,
+        ansatte:      document.getElementById('ansatte').value,
+      };
+
+      // Save locally
+      localStorage.setItem('slate_firm_profile', JSON.stringify(data));
+
+      // Try server
+      try {
+        await fetch('/api/firm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+      } catch(e) { /* offline — local save OK */ }
+
+      showToast('Firmaprofil gemt ✓');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+  </script>
+</body>
+</html>

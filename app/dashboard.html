@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#F7F6F2">
+  <title>Hr. Slate — Overblik</title>
+  <link rel="manifest" href="/app/manifest.json">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #1D9E75;
+      --primary-light: #9FE1CB;
+      --dark: #2C2C2A;
+      --dark-2: #444441;
+      --dark-3: #5C5C58;
+      --muted: #888884;
+      --bg: #FFFFFF;
+      --bg-2: #F7F6F2;
+      --bg-3: #EFEDE7;
+      --border: #E5E3DC;
+      --text: #1A1A18;
+      --lilla: #534AB7;
+      --lilla-light: #EEEDFE;
+      --lilla-dark: #3C3489;
+      --blaa: #85B7EB;
+      --blaa-dark: #0C447C;
+      --blaa-light: #E6F1FB;
+      --roed: #A32D2D;
+      --amber: #854F0B;
+      --amber-light: #FAEEDA;
+      --groen-light: #E1F5EE;
+      --groen-dark: #085041;
+      --coral: #FAECE7;
+      --coral-dark: #712B13;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-2);
+      color: var(--text);
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      min-height: 100dvh;
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+
+    /* HEADER */
+    .dash-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(247,246,242,0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top));
+    }
+
+    .back-btn {
+      width: 44px;
+      height: 44px;
+      border: none;
+      background: transparent;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--dark-2);
+      flex-shrink: 0;
+      transition: background 0.15s ease;
+    }
+    .back-btn:active { background: var(--bg-3); }
+
+    .dash-header-center { flex: 1; }
+    .dash-greeting { font-size: 17px; font-weight: 700; color: var(--dark); }
+    .dash-date { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+    .avatar-btn {
+      width: 36px; height: 36px;
+      border: none; background: var(--dark); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; transition: all 0.15s ease;
+    }
+    .avatar-btn:active { transform: scale(0.95); }
+    .avatar-initials { font-size: 13px; font-weight: 600; color: var(--primary-light); }
+
+    .scroll-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* KPI GRID */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .kpi-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--dark);
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+
+    .kpi-meta {
+      font-size: 12px;
+      color: var(--primary);
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-weight: 500;
+    }
+
+    .kpi-meta .arrow { font-size: 10px; }
+
+    /* CHART SECTION */
+    .section-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .section-link {
+      font-size: 13px;
+      color: var(--primary);
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 180px;
+    }
+
+    /* SLATE FORSLAG BOX */
+    .slate-box {
+      background: var(--dark);
+      border-radius: 20px;
+      padding: 16px;
+      color: white;
+    }
+
+    .slate-box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .slate-box-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .slate-mini-avatar {
+      width: 32px; height: 32px;
+      background: rgba(29,158,117,.2);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--primary-light);
+    }
+
+    .slate-box-title { font-size: 14px; font-weight: 700; color: white; }
+    .slate-box-link { font-size: 13px; color: var(--primary-light); font-weight: 600; cursor: pointer; }
+
+    .slate-suggestion {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 6px 0;
+      font-size: 13px;
+      color: rgba(255,255,255,.8);
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+
+    .slate-suggestion-arrow {
+      color: var(--primary-light);
+      font-size: 12px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ACTIVE CASES */
+    .case-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .case-item:last-child { border-bottom: none; }
+    .case-item:active { opacity: 0.7; }
+
+    .case-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .dot-igangsat { background: var(--lilla); }
+    .dot-sendt    { background: var(--blaa-dark); }
+    .dot-godkendt { background: var(--primary); }
+
+    .case-info { flex: 1; min-width: 0; }
+    .case-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .case-meta { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+    .case-right { text-align: right; flex-shrink: 0; }
+    .case-amount { font-size: 13px; font-weight: 600; color: var(--dark); }
+
+    .status-badge {
+      font-size: 10px; font-weight: 600;
+      padding: 3px 7px; border-radius: 20px;
+    }
+    .status-igangsat { background: var(--lilla-light); color: var(--lilla-dark); }
+    .status-sendt    { background: var(--blaa-light);  color: var(--blaa-dark); }
+    .status-godkendt { background: var(--groen-light); color: var(--groen-dark); }
+
+    .see-all {
+      display: block;
+      text-align: right;
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 8px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="dash-header">
+      <button class="back-btn" onclick="window.location.href='/app/'" aria-label="Tilbage">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <div class="dash-header-center">
+        <div class="dash-greeting">Godmorgen, mester</div>
+        <div class="dash-date" id="dashDate"></div>
+      </div>
+      <button class="avatar-btn" onclick="window.location.href='/app/settings.html'" aria-label="Profil">
+        <span class="avatar-initials">JB</span>
+      </button>
+    </header>
+
+    <div class="scroll-content">
+      <!-- KPI -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Omsætning i år</div>
+          <div class="kpi-value">2,84M</div>
+          <div class="kpi-meta"><span class="arrow">▲</span> +18% vs. 2025</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Gns. DG</div>
+          <div class="kpi-value">34,2%</div>
+          <div class="kpi-meta"><span class="arrow">▲</span> +2,1% vs. 2025</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Afvigelse</div>
+          <div class="kpi-value">+3,8%</div>
+          <div class="kpi-meta"><span class="arrow">▲</span> Forbedret fra 5,1%</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Acceptrate</div>
+          <div class="kpi-value">72%</div>
+          <div class="kpi-meta"><span class="arrow">▲</span> +8% vs. kvartal</div>
+        </div>
+      </div>
+
+      <!-- CHART: Omsætning & DG -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title">Omsætning &amp; DG</div>
+          <span class="section-link">Pr. type</span>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="revenueChart"></canvas>
+        </div>
+      </div>
+
+      <!-- SLATE FORSLAG -->
+      <div class="slate-box" onclick="window.location.href='/app/chat.html?mode=forslag'" style="cursor:pointer;">
+        <div class="slate-box-header">
+          <div class="slate-box-left">
+            <div class="slate-mini-avatar">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+            <span class="slate-box-title">Slate har 3 forslag</span>
+          </div>
+          <span class="slate-box-link">Tryk her →</span>
+        </div>
+        <div class="slate-suggestion">
+          <span class="slate-suggestion-arrow">›</span>
+          Hæv materialetillæg på tømrerarbejde — I er under markedet
+        </div>
+        <div class="slate-suggestion">
+          <span class="slate-suggestion-arrow">›</span>
+          3 tilbud fra april uden svar — brug for opfølgning
+        </div>
+        <div class="slate-suggestion">
+          <span class="slate-suggestion-arrow">›</span>
+          Badeværelsesprisen er steget 8% — opdatér skabelon
+        </div>
+      </div>
+
+      <!-- AKTIVE SAGER -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title">Aktive sager</div>
+        </div>
+        <div class="case-item" onclick="window.location.href='/app/chat.html'">
+          <div class="case-dot dot-igangsat"></div>
+          <div class="case-info">
+            <div class="case-name">Tilbygning Lyngby — Larsen</div>
+            <div class="case-meta">Tømrer · 28 kvm · I dag</div>
+          </div>
+          <div class="case-right">
+            <div class="case-amount">348.000 kr</div>
+            <span class="status-badge status-igangsat">Igangsat</span>
+          </div>
+        </div>
+        <div class="case-item" onclick="window.location.href='/app/chat.html'">
+          <div class="case-dot dot-sendt"></div>
+          <div class="case-info">
+            <div class="case-name">Badeværelse Hellerup — Møller</div>
+            <div class="case-meta">VVS · 9 kvm · 11. apr</div>
+          </div>
+          <div class="case-right">
+            <div class="case-amount">87.500 kr</div>
+            <span class="status-badge status-sendt">Sendt</span>
+          </div>
+        </div>
+        <div class="case-item" onclick="window.location.href='/app/chat.html'">
+          <div class="case-dot dot-godkendt"></div>
+          <div class="case-info">
+            <div class="case-name">Facade maling Gentofte</div>
+            <div class="case-meta">Maler · 8. apr</div>
+          </div>
+          <div class="case-right">
+            <div class="case-amount">64.000 kr</div>
+            <span class="status-badge status-godkendt">Godkendt</span>
+          </div>
+        </div>
+        <span class="see-all" onclick="window.location.href='/app/'">Se alle →</span>
+      </div>
+
+      <!-- CHART: Tilbud vs. realiseret -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title">Tilbud vs. realiseret</div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="compareChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Date
+    document.getElementById('dashDate').textContent = new Date().toLocaleDateString('da-DK', {weekday:'long', day:'numeric', month:'long'});
+
+    // Chart defaults
+    Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+    Chart.defaults.font.size = 11;
+    Chart.defaults.color = '#888884';
+
+    // Revenue & DG chart
+    new Chart(document.getElementById('revenueChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'],
+        datasets: [
+          {
+            label: 'Omsætning',
+            data: [420, 510, 380, 460, 530, 480],
+            backgroundColor: '#1D9E75',
+            borderRadius: 5,
+            barPercentage: 0.6,
+            categoryPercentage: 0.7,
+          },
+          {
+            label: 'DG',
+            data: [140, 168, 130, 158, 187, 168],
+            backgroundColor: '#534AB7',
+            borderRadius: 5,
+            barPercentage: 0.6,
+            categoryPercentage: 0.7,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { boxWidth: 10, padding: 12 } },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}k kr` } }
+        },
+        scales: {
+          x: { grid: { display: false }, border: { display: false } },
+          y: { grid: { color: '#E5E3DC' }, border: { display: false }, ticks: { callback: v => v + 'k' } }
+        }
+      }
+    });
+
+    // Compare chart
+    new Chart(document.getElementById('compareChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Tilbygning Lyngby', 'Tagudskiftning Holte', 'Bad Hellerup', 'Køkken Charlott.'],
+        datasets: [
+          {
+            label: 'Tilbud',
+            data: [348, 312, 87, 142],
+            backgroundColor: '#85B7EB',
+            borderRadius: 5,
+            barPercentage: 0.6,
+            categoryPercentage: 0.8,
+          },
+          {
+            label: 'Realiseret',
+            data: [361, 298, 91, 138],
+            backgroundColor: '#1D9E75',
+            borderRadius: 5,
+            barPercentage: 0.6,
+            categoryPercentage: 0.8,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { boxWidth: 10, padding: 12 } },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}k kr` } }
+        },
+        scales: {
+          x: { grid: { display: false }, border: { display: false }, ticks: { maxRotation: 0, font: { size: 10 } } },
+          y: { grid: { color: '#E5E3DC' }, border: { display: false }, ticks: { callback: v => v + 'k' } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
