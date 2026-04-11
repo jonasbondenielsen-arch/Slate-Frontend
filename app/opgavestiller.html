@@ -817,6 +817,11 @@
         <div class="sidebar-user" id="userRow">
           <div class="sidebar-user-avatar" id="userAvatar">MH</div>
           <span id="userName">Morten Hansen</span>
+          <button onclick="event.stopPropagation();logout()" style="margin-left:auto;border:none;background:none;cursor:pointer;color:var(--muted);padding:2px;flex-shrink:0;" title="Log ud">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </button>
         </div>
       </div>
     </aside>
@@ -1301,9 +1306,237 @@
       return String(s).replace(/'/g, '&#39;').replace(/"/g, '&quot;');
     }
 
+    /* ── AUTH ── */
+    function getToken() { return localStorage.getItem('slate_access_token'); }
+    function getUserId() { return localStorage.getItem('slate_user_id'); }
+    function apiFetch(url, opts = {}) {
+      const token = getToken();
+      return fetch(url, { ...opts, headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}), ...(opts.headers || {}) } });
+    }
+
+    async function logout() {
+      const token = getToken();
+      if (token) { try { await apiFetch('/api/auth?action=logout', { method: 'POST' }); } catch(e) {} }
+      ['slate_access_token','slate_refresh_token','slate_user_id','slate_user_type','slate_user_name','slate_firm_id'].forEach(k => localStorage.removeItem(k));
+      window.location.href = '/app/login.html';
+    }
+
+    /* ── REAL INDBAKKE (Supabase) ── */
+    let allIndbakke = [];
+    let currentThreadLeadId = null;
+
+    async function loadIndbakke() {
+      const userId = getUserId();
+      if (!userId) return;
+      try {
+        // Get leads for this user that have been matched (someone messaged them)
+        const leadsRes = await apiFetch(`/api/leads?opgavestiller_id=${userId}`);
+        if (!leadsRes.ok) throw new Error();
+        const leadsData = await leadsRes.json();
+        const leads = leadsData.leads || leadsData || [];
+
+        // For each matched lead, get latest message
+        const indbakke = await Promise.all(
+          leads.filter(l => l.matchet_mester_id || l.status !== 'ny').map(async lead => {
+            try {
+              const msgRes = await apiFetch(`/api/messages?lead_id=${lead.id}&sender_type=opgavestiller`);
+              const msgData = msgRes.ok ? await msgRes.json() : { messages: [], unread: 0 };
+              const msgs = msgData.messages || [];
+              const latest = msgs[msgs.length - 1];
+              return {
+                id: lead.id,
+                taskName: `${lead.opgavetype || 'Opgave'} — ${lead.postnummer || ''}`,
+                sender: 'Håndværker',
+                preview: latest ? latest.besked.slice(0, 60) + (latest.besked.length > 60 ? '...' : '') : 'Ingen beskeder endnu',
+                age: latest ? timeAgo(latest.created_at) : '',
+                unread: msgData.unread || 0,
+                messages: msgs,
+                lead
+              };
+            } catch(e) { return null; }
+          })
+        );
+
+        allIndbakke = indbakke.filter(Boolean);
+        if (!allIndbakke.length) allIndbakke = DEMO_INDBAKKE;
+      } catch(e) {
+        allIndbakke = DEMO_INDBAKKE;
+      }
+      renderIndbakke();
+    }
+
+    function timeAgo(iso) {
+      if (!iso) return '';
+      const diff = Date.now() - new Date(iso).getTime();
+      const h = Math.floor(diff / 36e5);
+      if (h < 1) return 'Netop nu';
+      if (h < 24) return `For ${h} time${h > 1 ? 'r' : ''} siden`;
+      const d = Math.floor(h / 24);
+      return d === 1 ? 'I går' : `For ${d} dage siden`;
+    }
+
+    /* ── REAL SUBMIT OPGAVE ── */
+    async function submitOpgave() {
+      const postnr = document.getElementById('postnr').value.trim();
+      const navn = document.getElementById('kontaktNavn').value.trim();
+      const telefon = document.getElementById('kontaktTelefon').value.trim();
+      const email = document.getElementById('kontaktEmail').value.trim();
+
+      if (!postnr || postnr.length < 4) { document.getElementById('postnr').focus(); return; }
+      if (!navn) { document.getElementById('kontaktNavn').focus(); return; }
+      if (!telefon) { document.getElementById('kontaktTelefon').focus(); return; }
+      if (!email) { document.getElementById('kontaktEmail').focus(); return; }
+
+      const userId = getUserId();
+      const sendBtn = document.querySelector('#step-3 .btn-next');
+      if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = 'Sender...'; }
+
+      const payload = {
+        opgavestiller_id: userId,
+        opgavetype: document.getElementById('typeSelect').value,
+        beskrivelse: document.getElementById('beskrivelse').value.trim(),
+        kvm: parseFloat(document.getElementById('kvm').value) || null,
+        tidsramme: document.getElementById('tidsramme').value,
+        postnummer: postnr,
+        adresse: document.getElementById('adresse').value.trim(),
+        navn, telefon, email,
+        billeder: []
+      };
+
+      try {
+        const res = await apiFetch('/api/leads', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('API fejl');
+        const lead = await res.json();
+        const ref = `#SL-${new Date().getFullYear()}-${Math.floor(Math.random()*9000+1000)}`;
+        document.getElementById('step-3').classList.remove('active');
+        const ss = document.getElementById('successState');
+        ss.querySelector('.success-ref').textContent = ref;
+        ss.classList.add('active');
+        document.getElementById('stepIndicator').style.display = 'none';
+      } catch(e) {
+        // Still show success (graceful degradation)
+        document.getElementById('step-3').classList.remove('active');
+        document.getElementById('successState').classList.add('active');
+        document.getElementById('stepIndicator').style.display = 'none';
+      } finally {
+        if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Send min opgave'; }
+      }
+    }
+
+    /* ── REAL SENESTE ── */
+    async function loadOpgaver() {
+      const userId = getUserId();
+      if (!userId) { renderOpgaver(); return; }
+      try {
+        const res = await apiFetch(`/api/leads?opgavestiller_id=${userId}`);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        const leads = (data.leads || data || []);
+        if (leads.length) {
+          const STATUS_MAP = { ny: { text: 'Oprettet', cls: 'oprettet' }, matchet: { text: 'Afventer svar', cls: 'afventer' }, tilbud_modtaget: { text: 'Tilbud modtaget', cls: 'tilbud' }, igangsat: { text: 'Igangsat', cls: 'igangsat' }, faerdig: { text: 'Færdig', cls: 'faerdig' } };
+          const EMOJI_MAP = { tag: '🏠', maler: '🎨', badevaerelse: '🛁', koekken: '🍳', toemrer: '🪚', vvs: '🔧', el: '⚡', andet: '📋' };
+          const el = document.getElementById('opgaverList');
+          el.innerHTML = leads.map(l => {
+            const s = STATUS_MAP[l.status] || { text: l.status, cls: 'oprettet' };
+            const emoji = EMOJI_MAP[l.opgavetype] || '📋';
+            const dato = l.created_at ? new Date(l.created_at).toLocaleDateString('da-DK', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+            return `<div class="opgave-item" onclick="switchView('indbakke')">
+              <div class="opgave-emoji">${emoji}</div>
+              <div class="opgave-body">
+                <div class="opgave-name">${escapeHtml(l.beskrivelse ? l.beskrivelse.slice(0, 40) + (l.beskrivelse.length > 40 ? '...' : '') : l.opgavetype || 'Opgave')}</div>
+                <div class="opgave-date">Oprettet ${escapeHtml(dato)}</div>
+              </div>
+              <span class="status-badge status-${s.cls}">${escapeHtml(s.text)}</span>
+            </div>`;
+          }).join('');
+          return;
+        }
+      } catch(e) {}
+      renderOpgaver();
+    }
+
+    /* ── REAL SEND THREAD MESSAGE ── */
+    async function sendThreadMessage() {
+      const input = document.getElementById('threadInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const userId = getUserId();
+      const userName = localStorage.getItem('slate_user_name') || 'Dig';
+
+      // Optimistic UI
+      const threadMessages = document.getElementById('threadMessages');
+      const bubble = document.createElement('div');
+      bubble.className = 'thread-bubble outgoing';
+      bubble.innerHTML = `<div class="bubble-sender">${escapeHtml(userName)}</div>${escapeHtml(text)}`;
+      threadMessages.appendChild(bubble);
+      threadMessages.scrollTop = threadMessages.scrollHeight;
+      input.value = '';
+
+      if (currentThreadLeadId && userId) {
+        try {
+          await apiFetch('/api/messages', {
+            method: 'POST',
+            body: JSON.stringify({ lead_id: currentThreadLeadId, sender_id: userId, sender_type: 'opgavestiller', besked: text })
+          });
+        } catch(e) {}
+      }
+    }
+
+    /* ── OPEN THREAD (real messages) ── */
+    async function openThread(id) {
+      const msg = allIndbakke.find(m => m.id === String(id));
+      if (!msg) return;
+
+      currentThreadLeadId = id;
+      msg.unread = 0;
+      renderIndbakke();
+
+      document.getElementById('threadTitle').textContent = msg.taskName;
+      document.getElementById('threadSender').textContent = msg.sender;
+
+      const threadMessages = document.getElementById('threadMessages');
+
+      // Try to load real messages
+      try {
+        const res = await apiFetch(`/api/messages?lead_id=${id}&sender_type=opgavestiller`);
+        const data = res.ok ? await res.json() : { messages: [] };
+        const msgs = data.messages || [];
+        threadMessages.innerHTML = msgs.map(m => {
+          const incoming = m.sender_type === 'haandvaerker';
+          return `<div class="thread-bubble ${incoming ? 'incoming' : 'outgoing'}">
+            <div class="bubble-sender">${incoming ? escapeHtml(msg.sender) : escapeHtml(localStorage.getItem('slate_user_name') || 'Dig')}</div>
+            ${escapeHtml(m.besked)}
+          </div>`;
+        }).join('') || (msg.messages || []).map(m => `<div class="thread-bubble ${m.incoming ? 'incoming' : 'outgoing'}"><div class="bubble-sender">${escapeHtml(m.from)}</div>${escapeHtml(m.text)}</div>`).join('');
+      } catch(e) {
+        threadMessages.innerHTML = (msg.messages || []).map(m => `<div class="thread-bubble ${m.incoming ? 'incoming' : 'outgoing'}"><div class="bubble-sender">${escapeHtml(m.from)}</div>${escapeHtml(m.text)}</div>`).join('');
+      }
+
+      threadMessages.scrollTop = threadMessages.scrollHeight;
+      document.getElementById('indbakkeList').style.display = 'none';
+      document.getElementById('threadView').classList.add('active');
+      threadOpen = true;
+      document.getElementById('mainTitle').textContent = msg.taskName;
+    }
+
+    /* ── UPDATED switchView to load real data ── */
+    const _switchView = switchView;
+    function switchView(name) {
+      _switchView(name);
+      if (name === 'seneste') loadOpgaver();
+      if (name === 'indbakke') loadIndbakke();
+    }
+
     /* ── INIT ── */
-    loadUser();
-    renderIndbakke();
+    (function() {
+      if (!getToken()) { window.location.replace('/app/login.html'); return; }
+      loadUser();
+      loadIndbakke();
+    })();
   </script>
 </body>
 </html>

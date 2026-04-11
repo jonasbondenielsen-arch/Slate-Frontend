@@ -7,6 +7,10 @@
     "api/projects.js": {"maxDuration": 10},
     "api/firm.js": {"maxDuration": 10},
     "api/standards.js": {"maxDuration": 10},
-    "api/rules.js": {"maxDuration": 10}
+    "api/rules.js":        {"maxDuration": 10},
+    "api/auth.js":         {"maxDuration": 15},
+    "api/leads.js":        {"maxDuration": 10},
+    "api/messages.js":     {"maxDuration": 10},
+    "api/sager.js":        {"maxDuration": 10}
   }
 }

@@ -519,17 +519,58 @@
 
     let allLeads = [];
 
+    /* ── AUTH ── */
+    function getToken() { return localStorage.getItem('slate_access_token'); }
+    function apiFetch(url, opts = {}) {
+      const token = getToken();
+      return fetch(url, { ...opts, headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}), ...(opts.headers || {}) } });
+    }
+
     /* ── LOAD ── */
     async function loadLeads() {
+      if (!getToken()) { window.location.replace('/app/login.html'); return; }
       try {
-        const res = await fetch('/api/leads');
+        const res = await apiFetch('/api/leads?status=ny');
         if (!res.ok) throw new Error('not ok');
         const data = await res.json();
-        allLeads = data.leads || data || [];
+        const raw = data.leads || data || [];
+        // Map Supabase rows to display format
+        allLeads = raw.length ? raw.map(normalizeLeadRow) : DEMO_LEADS;
       } catch (e) {
         allLeads = DEMO_LEADS;
       }
       renderList(allLeads);
+    }
+
+    const OPGAVETYPE_EMOJI = { tag:'🏠', maler:'🎨', badevaerelse:'🛁', koekken:'🍳', tilbygning:'🏗', vvs:'🔧', el:'⚡', murer:'🧱', toemrer:'🪚', gulv:'🪵', anlaeg:'🌿', andet:'📋' };
+
+    function normalizeLeadRow(r) {
+      const emoji = OPGAVETYPE_EMOJI[r.opgavetype] || '📋';
+      const titel = r.opgavetype ? r.opgavetype.charAt(0).toUpperCase() + r.opgavetype.slice(1).replace('ae','æ').replace('oe','ø').replace('aa','å') : 'Opgave';
+      const kvm = r.kvm ? ` · ca. ${r.kvm} kvm` : '';
+      const billed = (r.billeder && Array.isArray(r.billeder)) ? ` · ${r.billeder.length} billeder` : '';
+      const age = r.created_at ? timeAgo(r.created_at) : '';
+      return {
+        id: r.id, type: r.opgavetype, emoji,
+        title: titel, postnr: r.postnummer || '',
+        meta: `${r.opgavetype || ''}${kvm}${billed}`,
+        age, beskrivelse: r.beskrivelse || '',
+        billeder: Array.isArray(r.billeder) ? r.billeder.length : 0,
+        billedUrls: Array.isArray(r.billeder) ? r.billeder : [],
+        tidsramme: r.tidsramme || '',
+        kontakt: { navn: r.navn || '', telefon: r.telefon || '', email: r.email || '', adresse: r.adresse || '' },
+        opgavestiller_id: r.opgavestiller_id
+      };
+    }
+
+    function timeAgo(iso) {
+      const diff = Date.now() - new Date(iso).getTime();
+      const h = Math.floor(diff / 36e5);
+      if (h < 1) return 'Oprettet netop nu';
+      if (h < 24) return `Oprettet for ${h} time${h>1?'r':''} siden`;
+      const d = Math.floor(h / 24);
+      if (d === 1) return 'Oprettet i går';
+      return `Oprettet for ${d} dage siden`;
     }
 
     /* ── RENDER LIST ── */
@@ -671,10 +712,35 @@
     }
 
     /* ── CONTACT CUSTOMER ── */
-    function contactCustomer(id) {
-      const lead = allLeads.find(l => l.id === String(id));
+    async function contactCustomer(leadId) {
+      const lead = allLeads.find(l => l.id === String(leadId));
       if (!lead) return;
-      window.location.href = `tel:${lead.kontakt.telefon}`;
+
+      const userId = localStorage.getItem('slate_user_id');
+      if (!userId) { window.location.href = '/app/login.html'; return; }
+
+      try {
+        // Update lead status + matchet_mester_id
+        await apiFetch(`/api/leads?id=${leadId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status: 'matchet', matchet_mester_id: userId })
+        });
+        // Send first message
+        await apiFetch('/api/messages', {
+          method: 'POST',
+          body: JSON.stringify({
+            lead_id: leadId,
+            sender_id: userId,
+            sender_type: 'haandvaerker',
+            besked: `Hej! Jeg har set din opgave og vil gerne hjælpe. Kan vi aftale et tidspunkt for at kigge på det?`
+          })
+        });
+      } catch(e) {}
+
+      // If they have a phone number, also offer to call
+      if (lead.kontakt.telefon) {
+        window.location.href = `tel:${lead.kontakt.telefon}`;
+      }
     }
 
     /* ── NAVIGATION ── */

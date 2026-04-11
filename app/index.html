@@ -656,6 +656,11 @@
         <div class="sidebar-user" onclick="navigateTo('settings')" id="userRow">
           <div class="sidebar-user-avatar" id="userAvatar">JB</div>
           <span id="userName">Jonas Bonde</span>
+          <button onclick="event.stopPropagation();logout()" style="margin-left:auto;border:none;background:none;cursor:pointer;color:var(--muted);padding:2px;flex-shrink:0;" title="Log ud">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </button>
         </div>
       </div>
     </aside>
@@ -731,23 +736,10 @@
 
     /* ── ONBOARDING ── */
     function chooseUserType(type) {
-      localStorage.setItem('slate_user_type', type);
-      // Persist to Supabase if logged in
-      const firmId = localStorage.getItem('slate_firm_id');
-      if (firmId) {
-        fetch('/api/update-profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ firm_id: firmId, user_type: type })
-        }).catch(() => {});
-      }
-      if (type === 'opgavestiller') {
-        window.location.href = '/app/opgavestiller.html';
-      } else {
-        document.getElementById('onboarding').classList.remove('visible');
-        loadProjects();
-        loadUser();
-      }
+      // Store pending choice in sessionStorage, then go to login/signup
+      sessionStorage.setItem('slate_pending_user_type', type);
+      localStorage.setItem('slate_user_type', type); // keep for UX fallback
+      window.location.href = '/app/login.html';
     }
 
     /* ── SIDEBAR MOBILE ── */
@@ -775,13 +767,31 @@
 
     /* ── RECENT PROJECTS IN SIDEBAR ── */
     async function loadProjects() {
+      const userId = localStorage.getItem('slate_user_id');
       const firmId = localStorage.getItem('slate_firm_id');
-      if (!firmId) { renderDemoProjects(); return; }
-      try {
-        const res = await fetch(`/api/projects?firm_id=${firmId}`);
-        const data = await res.json();
-        renderSidebarChats(data.projects || []);
-      } catch(e) { renderDemoProjects(); }
+
+      // Try new sager API first (authenticated users)
+      if (userId) {
+        try {
+          const res = await apiFetch(`/api/sager?mester_id=${userId}`);
+          if (res.ok) {
+            const data = await res.json();
+            const list = (data.sager || []).map(s => ({ id: s.id, sagsnavn: s.sagsnavn, status: s.status }));
+            if (list.length) { renderSidebarChats(list); return; }
+          }
+        } catch(e) {}
+      }
+
+      // Fall back to old projects API
+      if (firmId) {
+        try {
+          const res = await fetch(`/api/projects?firm_id=${firmId}`);
+          const data = await res.json();
+          if ((data.projects || []).length) { renderSidebarChats(data.projects); return; }
+        } catch(e) {}
+      }
+
+      renderDemoProjects();
     }
 
     function renderDemoProjects() {
@@ -827,18 +837,48 @@
       document.getElementById('userName').textContent = name;
     }
 
-    /* ── STARTUP: check user type ── */
+    /* ── AUTH HELPERS ── */
+    function getToken() { return localStorage.getItem('slate_access_token'); }
+    async function apiFetch(url, opts = {}) {
+      const token = getToken();
+      return fetch(url, {
+        ...opts,
+        headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}), ...(opts.headers || {}) }
+      });
+    }
+
+    async function logout() {
+      const token = getToken();
+      if (token) {
+        try { await apiFetch('/api/auth?action=logout', { method: 'POST' }); } catch(e) {}
+      }
+      ['slate_access_token','slate_refresh_token','slate_user_id','slate_user_type','slate_user_name','slate_firm_id'].forEach(k => localStorage.removeItem(k));
+      window.location.href = '/app/login.html';
+    }
+
+    /* ── STARTUP ── */
     (function() {
+      const token = getToken();
       const userType = localStorage.getItem('slate_user_type');
+
+      if (!token) {
+        // No auth token — show onboarding if no prior choice, else go to login
+        if (!userType) {
+          document.getElementById('onboarding').classList.add('visible');
+        } else {
+          window.location.replace('/app/login.html');
+        }
+        return;
+      }
+
       if (userType === 'opgavestiller') {
         window.location.replace('/app/opgavestiller.html');
-      } else if (!userType) {
-        document.getElementById('onboarding').classList.add('visible');
-      } else {
-        // haandvaerker — load normal app
-        loadProjects();
-        loadUser();
+        return;
       }
+
+      // haandvaerker — load normal app
+      loadProjects();
+      loadUser();
     })();
   </script>
 </body>
