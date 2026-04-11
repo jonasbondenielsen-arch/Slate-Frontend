@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#FFFFFF">
+  <title>Find opgaver — Slate</title>
+  <link rel="manifest" href="/app/manifest.json">
+  <style>
+    :root {
+      --primary: #1D9E75;
+      --primary-light: #9FE1CB;
+      --dark: #2C2C2A;
+      --dark-2: #444441;
+      --dark-3: #5C5C58;
+      --muted: #888884;
+      --bg: #FFFFFF;
+      --bg-2: #F7F6F2;
+      --bg-3: #EFEDE7;
+      --border: #E5E3DC;
+      --text: #1A1A18;
+      --lilla: #534AB7;
+      --lilla-light: #EEEDFE;
+      --lilla-dark: #3C3489;
+      --groen-light: #E1F5EE;
+      --groen-dark: #085041;
+      --coral: #FAECE7;
+      --coral-dark: #712B13;
+      --amber: #854F0B;
+      --amber-light: #FAEEDA;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── PAGE SHELL ─────────────────────────────── */
+    .page {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      height: 100dvh;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    /* ─── HEADER ─────────────────────────────────── */
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 16px 12px;
+      padding-top: max(14px, env(safe-area-inset-top));
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .btn-back {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: transparent;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--dark-2);
+      flex-shrink: 0;
+      transition: background 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-back:hover { background: var(--bg-2); }
+
+    .page-title {
+      flex: 1;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--dark);
+      letter-spacing: -0.2px;
+    }
+
+    .btn-filter {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: transparent;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--dark-3);
+      flex-shrink: 0;
+      transition: background 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-filter:hover { background: var(--bg-2); }
+
+    /* ─── LEADS LIST ─────────────────────────────── */
+    .leads-scroll {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px 16px;
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+
+    .leads-scroll::-webkit-scrollbar { width: 0; }
+
+    /* ─── LEAD CARD ──────────────────────────────── */
+    .lead-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      background: var(--bg);
+      transition: background 0.12s, box-shadow 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .lead-card:hover {
+      background: var(--bg-2);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .lead-card:active { background: var(--bg-3); }
+
+    .lead-emoji {
+      font-size: 24px;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .lead-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .lead-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 2px;
+    }
+
+    .lead-postnr {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--dark-2);
+    }
+
+    .lead-meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .lead-age {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .lead-cta {
+      flex-shrink: 0;
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--primary);
+      background: var(--dark);
+      border: none;
+      border-radius: 20px;
+      padding: 6px 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .lead-cta:hover { background: var(--dark-2); }
+
+    /* ─── EMPTY STATE ─────────────────────────────── */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 60px 32px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .empty-icon {
+      font-size: 36px;
+      margin-bottom: 4px;
+    }
+
+    .empty-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--dark-3);
+    }
+
+    .empty-sub {
+      font-size: 13px;
+      color: var(--muted);
+      max-width: 260px;
+    }
+
+    /* ─── DETAIL VIEW ────────────────────────────── */
+    #detailView {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 0;
+    }
+
+    #detailView::-webkit-scrollbar { width: 0; }
+
+    #detailView.visible { display: block; }
+    #listView.hidden { display: none; }
+
+    .detail-inner {
+      padding: 16px 16px;
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+
+    .detail-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+      margin-bottom: 20px;
+      transition: color 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .detail-back-link:hover { color: var(--dark-2); }
+
+    .detail-hero {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .detail-hero-emoji {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .detail-hero-name {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--dark);
+      letter-spacing: -0.3px;
+    }
+
+    .detail-postnr-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--dark-3);
+      background: var(--bg-3);
+      border-radius: 20px;
+      padding: 4px 10px;
+      margin-bottom: 16px;
+    }
+
+    .detail-section-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 8px;
+    }
+
+    .detail-desc {
+      background: var(--bg-2);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 14px;
+      color: var(--dark-2);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    /* Photos */
+    .detail-photos {
+      margin-bottom: 20px;
+    }
+
+    .photos-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+    }
+
+    .photos-scroll::-webkit-scrollbar { height: 0; }
+
+    .photo-placeholder {
+      width: 80px;
+      height: 80px;
+      flex-shrink: 0;
+      background: var(--bg-3);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 20px;
+    }
+
+    /* Contact */
+    .detail-contact {
+      background: var(--bg-2);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+
+    .contact-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .contact-row:last-child { border-bottom: none; }
+
+    .contact-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: var(--bg-3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--dark-3);
+    }
+
+    .contact-label {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .contact-value {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--dark);
+      text-decoration: none;
+    }
+
+    .contact-value:hover { color: var(--primary); }
+
+    a.contact-value { color: var(--primary); }
+
+    /* Timeframe */
+    .detail-timeframe {
+      margin-bottom: 24px;
+    }
+
+    .timeframe-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--amber);
+      background: var(--amber-light);
+      border-radius: 20px;
+      padding: 4px 10px;
+    }
+
+    /* Action buttons */
+    .detail-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-outlined {
+      flex: 1;
+      padding: 13px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--dark);
+      background: var(--bg);
+      border: 1px solid var(--dark);
+      border-radius: 24px;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-outlined:hover { background: var(--bg-2); }
+
+    .btn-primary-action {
+      flex: 1;
+      padding: 13px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--primary-light);
+      background: var(--dark);
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-primary-action:hover { background: var(--dark-2); }
+
+    /* ─── DIVIDER ─────────────────────────────────── */
+    .detail-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 18px 0;
+    }
+
+    button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ── HEADER ── -->
+    <header class="page-header">
+      <button class="btn-back" onclick="goHome()" aria-label="Tilbage">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <span class="page-title">Find opgaver</span>
+      <button class="btn-filter" aria-label="Filtrer">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="6" x2="20" y2="6"/>
+          <line x1="8" y1="12" x2="16" y2="12"/>
+          <line x1="11" y1="18" x2="13" y2="18"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- ── LIST VIEW ── -->
+    <div id="listView" class="leads-scroll">
+      <div id="leadsList">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+
+    <!-- ── DETAIL VIEW ── -->
+    <div id="detailView">
+      <div class="detail-inner" id="detailInner">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* ── DEMO DATA ── */
+    const DEMO_LEADS = [
+      {
+        id: '1', type: 'tag', emoji: '🏠', title: 'Nyt tag', postnr: '2800 Kgs. Lyngby',
+        meta: 'Tagdækning · ca. 140 kvm · 3 billeder', age: 'Oprettet i dag',
+        beskrivelse: 'Vi skal have lagt nyt tag på vores hus fra 1972. Taget er ca. 140 kvm. Der er eternit nu som skal skiftes til tegl.',
+        billeder: 3,
+        kontakt: { navn: 'Morten Hansen', telefon: '28124567', email: 'morten@email.dk', adresse: 'Lyngby Hovedgade 42' },
+        tidsramme: 'Inden 3 måneder'
+      },
+      {
+        id: '2', type: 'badevarelse', emoji: '🛁', title: 'Badeværelse', postnr: '2900 Hellerup',
+        meta: 'VVS + fliser · ca. 8 kvm · 5 billeder', age: 'Oprettet i går',
+        beskrivelse: 'Vi vil gerne have totalrenoveret vores badeværelse på ca. 8 kvm. Ny bruseniche, nyt toilet, nye fliser på gulv og væg.',
+        billeder: 5,
+        kontakt: { navn: 'Susanne Møller', telefon: '40234567', email: 's.moller@gmail.com', adresse: 'Strandvejen 87, 2900 Hellerup' },
+        tidsramme: 'Inden 1 måned'
+      },
+      {
+        id: '3', type: 'maling', emoji: '🎨', title: 'Maling lejlighed', postnr: '2100 København Ø',
+        meta: 'Maler · 85 kvm · 2 billeder', age: 'Oprettet 2 dage siden',
+        beskrivelse: 'Vil have malet hele lejligheden — 3 værelser + stue + entre. Ca. 85 kvm i alt. Hvide vægge, nuværende maling er meget slidt.',
+        billeder: 2,
+        kontakt: { navn: 'Jakob Nielsen', telefon: '51234567', email: 'jakob.n@mail.dk', adresse: 'Østerbrogade 122, 2100 KBH Ø' },
+        tidsramme: 'Hurtigst muligt'
+      }
+    ];
+
+    let allLeads = [];
+
+    /* ── LOAD ── */
+    async function loadLeads() {
+      try {
+        const res = await fetch('/api/leads');
+        if (!res.ok) throw new Error('not ok');
+        const data = await res.json();
+        allLeads = data.leads || data || [];
+      } catch (e) {
+        allLeads = DEMO_LEADS;
+      }
+      renderList(allLeads);
+    }
+
+    /* ── RENDER LIST ── */
+    function renderList(leads) {
+      const el = document.getElementById('leadsList');
+      if (!leads.length) {
+        el.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <div class="empty-title">Ingen opgaver fundet</div>
+            <div class="empty-sub">Prøv at justere filtrene, eller kig igen lidt senere.</div>
+          </div>`;
+        return;
+      }
+      el.innerHTML = leads.map(lead => `
+        <div class="lead-card" onclick="showDetail('${escapeAttr(lead.id)}')">
+          <div class="lead-emoji">${lead.emoji}</div>
+          <div class="lead-body">
+            <div class="lead-title">${escapeHtml(lead.title)} <span class="lead-postnr">— ${escapeHtml(lead.postnr)}</span></div>
+            <div class="lead-meta">${escapeHtml(lead.meta)}</div>
+            <div class="lead-age">${escapeHtml(lead.age)}</div>
+          </div>
+          <button class="lead-cta" onclick="event.stopPropagation(); showDetailById('${escapeAttr(lead.id)}')">Se →</button>
+        </div>
+      `).join('');
+    }
+
+    /* ── SHOW DETAIL ── */
+    function showDetailById(id) {
+      const lead = allLeads.find(l => l.id === id);
+      if (lead) showDetail(id);
+    }
+
+    function showDetail(id) {
+      const lead = allLeads.find(l => l.id === String(id));
+      if (!lead) return;
+
+      const photosHtml = Array.from({ length: lead.billeder }, (_, i) => `
+        <div class="photo-placeholder">📷</div>
+      `).join('');
+
+      document.getElementById('detailInner').innerHTML = `
+        <button class="detail-back-link" onclick="showList()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          Alle opgaver
+        </button>
+
+        <div class="detail-hero">
+          <div class="detail-hero-emoji">${lead.emoji}</div>
+          <div class="detail-hero-name">${escapeHtml(lead.title)}</div>
+        </div>
+
+        <div class="detail-postnr-badge">📍 ${escapeHtml(lead.postnr)}</div>
+
+        <div class="detail-section-label">Beskrivelse</div>
+        <div class="detail-desc">${escapeHtml(lead.beskrivelse)}</div>
+
+        ${lead.billeder > 0 ? `
+        <div class="detail-photos">
+          <div class="detail-section-label">Billeder (${lead.billeder})</div>
+          <div class="photos-scroll">${photosHtml}</div>
+        </div>
+        ` : ''}
+
+        <div class="detail-section-label">Kontakt</div>
+        <div class="detail-contact">
+          <div class="contact-row">
+            <div class="contact-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <div>
+              <div class="contact-label">Navn</div>
+              <div class="contact-value">${escapeHtml(lead.kontakt.navn)}</div>
+            </div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.86 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.77 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="contact-label">Telefon</div>
+              <a class="contact-value" href="tel:${escapeAttr(lead.kontakt.telefon)}">${escapeHtml(lead.kontakt.telefon)}</a>
+            </div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </div>
+            <div>
+              <div class="contact-label">Email</div>
+              <a class="contact-value" href="mailto:${escapeAttr(lead.kontakt.email)}">${escapeHtml(lead.kontakt.email)}</a>
+            </div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <div>
+              <div class="contact-label">Adresse</div>
+              <div class="contact-value">${escapeHtml(lead.kontakt.adresse)}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-timeframe">
+          <div class="detail-section-label">Tidsramme</div>
+          <span class="timeframe-badge">⏱ ${escapeHtml(lead.tidsramme)}</span>
+        </div>
+
+        <div class="detail-actions">
+          <button class="btn-outlined" onclick="contactCustomer('${escapeAttr(lead.id)}')">Kontakt kunde</button>
+          <a class="btn-primary-action" href="/app/chat.html?mode=tilbud&lead=${escapeAttr(lead.id)}">Start tilbud med Slate</a>
+        </div>
+      `;
+
+      document.getElementById('listView').classList.add('hidden');
+      const detail = document.getElementById('detailView');
+      detail.classList.add('visible');
+      detail.scrollTop = 0;
+    }
+
+    /* ── SHOW LIST ── */
+    function showList() {
+      document.getElementById('detailView').classList.remove('visible');
+      document.getElementById('listView').classList.remove('hidden');
+    }
+
+    /* ── CONTACT CUSTOMER ── */
+    function contactCustomer(id) {
+      const lead = allLeads.find(l => l.id === String(id));
+      if (!lead) return;
+      window.location.href = `tel:${lead.kontakt.telefon}`;
+    }
+
+    /* ── NAVIGATION ── */
+    function goHome() {
+      window.location.href = '/app/';
+    }
+
+    /* ── HELPERS ── */
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function escapeAttr(s) {
+      if (s == null) return '';
+      return String(s).replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+    }
+
+    /* ── INIT ── */
+    loadLeads();
+  </script>
+</body>
+</html>

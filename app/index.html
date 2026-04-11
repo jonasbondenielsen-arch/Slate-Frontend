@@ -428,9 +428,134 @@
     }
 
     button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+    /* ─── ICON COLORS ──────────────────────────── */
+    .icon-leads { color: #D85A30; }
+
+    /* ─── ONBOARDING OVERLAY ─────────────────────── */
+    .onboarding {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 500;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      padding-top: max(32px, env(safe-area-inset-top));
+      padding-bottom: max(32px, env(safe-area-inset-bottom));
+    }
+
+    .onboarding.visible { display: flex; }
+
+    .ob-logo {
+      width: 52px;
+      height: 52px;
+      background: var(--dark);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .ob-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--dark);
+      text-align: center;
+      letter-spacing: -0.3px;
+      margin-bottom: 8px;
+    }
+
+    .ob-sub {
+      font-size: 14px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .ob-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .ob-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--bg);
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+    }
+
+    .ob-card:hover {
+      border-color: var(--dark-3);
+      box-shadow: 0 4px 16px rgba(0,0,0,.08);
+      transform: translateY(-1px);
+    }
+
+    .ob-card:active { transform: scale(0.98); }
+
+    .ob-icon {
+      font-size: 28px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .ob-card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+
+    .ob-card-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
   </style>
 </head>
 <body>
+  <!-- ── ONBOARDING ── -->
+  <div class="onboarding" id="onboarding">
+    <div class="ob-logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9FE1CB" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+        <polyline points="2 17 12 22 22 17"/>
+        <polyline points="2 12 12 17 22 12"/>
+      </svg>
+    </div>
+    <h1 class="ob-title">Velkommen til Slate</h1>
+    <p class="ob-sub">Hvad passer bedst p&aring; dig?</p>
+    <div class="ob-cards">
+      <button class="ob-card" onclick="chooseUserType('haandvaerker')">
+        <div class="ob-icon">🔨</div>
+        <div>
+          <div class="ob-card-title">Jeg er h&aring;ndv&aelig;rker</div>
+          <div class="ob-card-desc">Lav tilbud, find opgaver og hold styr p&aring; din forretning</div>
+        </div>
+      </button>
+      <button class="ob-card" onclick="chooseUserType('opgavestiller')">
+        <div class="ob-icon">🏠</div>
+        <div>
+          <div class="ob-card-title">Jeg har en opgave</div>
+          <div class="ob-card-desc">Beskriv hvad du skal have lavet og f&aring; svar fra lokale h&aring;ndv&aelig;rkere</div>
+        </div>
+      </button>
+    </div>
+  </div>
+
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
   <div class="app-shell">
@@ -466,6 +591,14 @@
           <line x1="6"  y1="20" x2="6"  y2="14"/>
         </svg>
         Efterkalkulation
+      </button>
+
+      <button class="sidebar-item" data-nav="leads" onclick="navigateTo('leads')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" class="icon-leads">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        Find opgaver
       </button>
 
       <button class="sidebar-item" onclick="navigateTo('dashboard')">
@@ -586,14 +719,35 @@
         ny:         '/app/chat.html',
         tilbud:     '/app/chat.html?mode=tilbud',
         efterkalk:  '/app/chat.html?mode=efterkalk',
+        leads:      '/app/leads.html',
         dashboard:  '/app/dashboard.html',
         images:     '/app/images.html',
         settings:   '/app/settings.html',
-        // legacy
         chat:       '/app/chat.html',
         templates:  '/app/chat.html'
       };
       window.location.href = routes[screen] || '/app/chat.html';
+    }
+
+    /* ── ONBOARDING ── */
+    function chooseUserType(type) {
+      localStorage.setItem('slate_user_type', type);
+      // Persist to Supabase if logged in
+      const firmId = localStorage.getItem('slate_firm_id');
+      if (firmId) {
+        fetch('/api/update-profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ firm_id: firmId, user_type: type })
+        }).catch(() => {});
+      }
+      if (type === 'opgavestiller') {
+        window.location.href = '/app/opgavestiller.html';
+      } else {
+        document.getElementById('onboarding').classList.remove('visible');
+        loadProjects();
+        loadUser();
+      }
     }
 
     /* ── SIDEBAR MOBILE ── */
@@ -673,8 +827,19 @@
       document.getElementById('userName').textContent = name;
     }
 
-    loadProjects();
-    loadUser();
+    /* ── STARTUP: check user type ── */
+    (function() {
+      const userType = localStorage.getItem('slate_user_type');
+      if (userType === 'opgavestiller') {
+        window.location.replace('/app/opgavestiller.html');
+      } else if (!userType) {
+        document.getElementById('onboarding').classList.add('visible');
+      } else {
+        // haandvaerker — load normal app
+        loadProjects();
+        loadUser();
+      }
+    })();
   </script>
 </body>
 </html>

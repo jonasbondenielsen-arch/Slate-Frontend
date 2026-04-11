@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#FFFFFF">
+  <title>Mine opgaver — Slate</title>
+  <link rel="manifest" href="/app/manifest.json">
+  <style>
+    :root {
+      --primary: #1D9E75;
+      --primary-light: #9FE1CB;
+      --dark: #2C2C2A;
+      --dark-2: #444441;
+      --dark-3: #5C5C58;
+      --muted: #888884;
+      --bg: #FFFFFF;
+      --bg-2: #F7F6F2;
+      --bg-3: #EFEDE7;
+      --border: #E5E3DC;
+      --text: #1A1A18;
+      --lilla: #534AB7;
+      --lilla-light: #EEEDFE;
+      --lilla-dark: #3C3489;
+      --groen-light: #E1F5EE;
+      --groen-dark: #085041;
+      --coral: #FAECE7;
+      --coral-dark: #712B13;
+      --amber: #854F0B;
+      --amber-light: #FAEEDA;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── APP SHELL ─────────────────────────────── */
+    .app-shell {
+      display: flex;
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    /* ─── SIDEBAR ────────────────────────────────── */
+    .sidebar {
+      width: 250px;
+      flex-shrink: 0;
+      background: var(--bg-2);
+      display: flex;
+      flex-direction: column;
+      padding: 10px 8px;
+      padding-top: max(10px, env(safe-area-inset-top));
+      padding-bottom: max(10px, env(safe-area-inset-bottom));
+      overflow: hidden;
+      transition: transform 0.25s ease;
+    }
+
+    /* ─── SIDEBAR ITEMS ──────────────────────────── */
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--dark-2);
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      text-decoration: none;
+      transition: background 0.12s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .sidebar-item:hover { background: var(--bg); }
+
+    .sidebar-item.active {
+      background: var(--bg);
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .sidebar-item svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 1.6;
+      fill: none;
+      flex-shrink: 0;
+    }
+
+    /* New opgave button */
+    .sidebar-new {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .sidebar-new:hover { background: var(--bg-3); }
+
+    /* Section labels */
+    .sidebar-label {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--muted);
+      padding: 14px 12px 6px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    /* Unread badge */
+    .badge-unread {
+      margin-left: auto;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Recent chats */
+    .sidebar-chats {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      min-height: 0;
+    }
+
+    .sidebar-chats::-webkit-scrollbar { width: 0; }
+
+    .sidebar-chat {
+      font-size: 12px;
+      padding: 7px 12px;
+      gap: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-chat .chat-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Footer */
+    .sidebar-footer {
+      padding-top: 6px;
+      border-top: 1px solid var(--border);
+      margin-top: 4px;
+    }
+
+    .sidebar-footer-item {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 7px 12px;
+    }
+
+    .sidebar-footer-item svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    /* User row */
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--dark-2);
+      cursor: pointer;
+      transition: background 0.12s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .sidebar-user:hover { background: var(--bg); }
+
+    .sidebar-user-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--dark);
+      color: var(--primary-light);
+      font-size: 9px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ─── MAIN AREA ──────────────────────────────── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    /* Main header */
+    .main-header {
+      padding: 14px 20px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .hamburger-btn {
+      display: none;
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: transparent;
+      border-radius: 10px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--dark-2);
+      flex-shrink: 0;
+      transition: background 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .hamburger-btn:hover { background: var(--bg-2); }
+
+    .main-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--dark);
+      letter-spacing: -0.2px;
+      flex: 1;
+    }
+
+    .step-indicator {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    /* ─── VIEW CONTENT ───────────────────────────── */
+    .view {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .view::-webkit-scrollbar { width: 0; }
+
+    .view.active { display: flex; flex-direction: column; }
+
+    /* ─── INDBAKKE VIEW ──────────────────────────── */
+    .indbakke-list {
+      flex: 1;
+      padding: 12px 16px;
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+
+    .message-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.1s;
+      border-radius: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .message-item:last-child { border-bottom: none; }
+    .message-item:hover { background: var(--bg-2); margin: 0 -8px; padding-left: 8px; padding-right: 8px; border-radius: 12px; }
+
+    .unread-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+
+    .unread-dot.read { background: transparent; }
+
+    .message-body { flex: 1; min-width: 0; }
+
+    .message-task {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 2px;
+    }
+
+    .message-sender {
+      font-size: 12px;
+      color: var(--dark-3);
+      margin-bottom: 3px;
+    }
+
+    .message-preview {
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .message-age {
+      font-size: 11px;
+      color: var(--muted);
+      flex-shrink: 0;
+      margin-top: 3px;
+      white-space: nowrap;
+    }
+
+    .empty-indbakke {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 60px 32px;
+      text-align: center;
+    }
+
+    .empty-indbakke .empty-icon { font-size: 36px; margin-bottom: 4px; }
+    .empty-indbakke .empty-title { font-size: 15px; font-weight: 500; color: var(--dark-3); }
+    .empty-indbakke .empty-sub { font-size: 13px; color: var(--muted); max-width: 280px; line-height: 1.5; }
+
+    /* ─── THREAD VIEW ────────────────────────────── */
+    #threadView {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #threadView.active { display: flex; }
+
+    .thread-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .thread-back {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .thread-back:hover { color: var(--dark-2); }
+
+    .thread-title { font-size: 14px; font-weight: 600; color: var(--dark); }
+    .thread-sub { font-size: 12px; color: var(--muted); }
+
+    .thread-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .thread-messages::-webkit-scrollbar { width: 0; }
+
+    .thread-bubble {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .thread-bubble.incoming {
+      background: var(--bg-2);
+      color: var(--dark);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .thread-bubble.outgoing {
+      background: var(--dark);
+      color: var(--primary-light);
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .bubble-sender {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .thread-input-wrap {
+      padding: 12px 16px;
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+    }
+
+    .thread-input {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 9px 14px;
+      font-size: 14px;
+      color: var(--text);
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .thread-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(29,158,117,.1); }
+    .thread-input::placeholder { color: var(--muted); }
+
+    .thread-send-btn {
+      width: 38px;
+      height: 38px;
+      border: none;
+      background: var(--dark);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.12s;
+    }
+
+    .thread-send-btn:hover { background: var(--dark-2); }
+
+    /* ─── NY OPGAVE VIEW ─────────────────────────── */
+    .form-wrap {
+      flex: 1;
+      padding: 20px 20px;
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+      max-width: 560px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .form-step { display: none; }
+    .form-step.active { display: block; }
+
+    .form-group { margin-bottom: 20px; }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--dark-2);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 14px;
+      color: var(--text);
+      font-family: inherit;
+      background: var(--bg);
+      outline: none;
+      transition: border-color 0.15s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(29,158,117,.1);
+    }
+
+    select.form-control {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888884' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    textarea.form-control { resize: vertical; min-height: 80px; }
+
+    /* Upload area */
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      padding: 32px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .upload-area:hover { border-color: var(--primary); background: var(--groen-light); }
+
+    .upload-icon { font-size: 28px; }
+
+    .upload-text {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .upload-hint {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* Photo preview grid */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .photo-thumb {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      object-fit: cover;
+      width: 100%;
+    }
+
+    /* Step buttons */
+    .step-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .btn-back-step {
+      flex: 0 0 auto;
+      padding: 13px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--dark);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      cursor: pointer;
+      transition: background 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-back-step:hover { background: var(--bg-2); }
+
+    .btn-next {
+      flex: 1;
+      padding: 13px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--primary-light);
+      background: var(--dark);
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-next:hover { background: var(--dark-2); }
+
+    /* ─── SUCCESS STATE ──────────────────────────── */
+    .success-state {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 40px 32px;
+      text-align: center;
+    }
+
+    .success-state.active { display: flex; }
+
+    .success-check {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    .success-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--dark);
+      letter-spacing: -0.3px;
+    }
+
+    .success-sub {
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 300px;
+      line-height: 1.6;
+    }
+
+    .success-ref {
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--bg-2);
+      border-radius: 8px;
+      padding: 6px 12px;
+    }
+
+    .success-link {
+      font-size: 14px;
+      color: var(--primary);
+      cursor: pointer;
+      border: none;
+      background: none;
+      text-decoration: underline;
+      margin-top: 8px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ─── SENESTE VIEW ───────────────────────────── */
+    .opgaver-list {
+      flex: 1;
+      padding: 12px 16px;
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+
+    .opgave-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .opgave-item:last-child { border-bottom: none; }
+
+    .opgave-emoji { font-size: 20px; flex-shrink: 0; }
+
+    .opgave-body { flex: 1; min-width: 0; }
+
+    .opgave-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--dark);
+      margin-bottom: 2px;
+    }
+
+    .opgave-date {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .status-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .status-oprettet   { background: #F1EFE8; color: var(--dark-3); }
+    .status-afventer   { background: var(--amber-light); color: var(--amber); }
+    .status-tilbud     { background: var(--groen-light); color: var(--groen-dark); }
+    .status-igangsat   { background: var(--lilla-light); color: var(--lilla-dark); }
+    .status-faerdig    { background: #F1EFE8; color: var(--dark-2); }
+
+    /* ─── MOBILE OVERLAY ─────────────────────────── */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.25);
+      z-index: 199;
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────── */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        z-index: 200;
+        transform: translateX(-100%);
+        box-shadow: 4px 0 24px rgba(0,0,0,.12);
+      }
+
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.visible { display: block; }
+      .hamburger-btn { display: flex; }
+      .main-header { padding: 12px 16px 10px; }
+    }
+
+    button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <div class="app-shell">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar" id="sidebar">
+
+      <!-- Ny opgave -->
+      <button class="sidebar-item sidebar-new" onclick="switchView('ny-opgave')">
+        <svg viewBox="0 0 24 24" stroke="currentColor">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Ny opgave
+      </button>
+
+      <!-- Indbakke -->
+      <button class="sidebar-item active" id="nav-indbakke" onclick="switchView('indbakke')">
+        <svg viewBox="0 0 24 24" stroke="currentColor">
+          <path d="M22 12h-6l-2 3h-4l-2-3H2"/>
+          <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+        </svg>
+        Indbakke
+        <span class="badge-unread" id="indbakkeBadge">2</span>
+      </button>
+
+      <!-- Seneste -->
+      <div class="sidebar-label">Seneste</div>
+
+      <button class="sidebar-item sidebar-chat" id="nav-chat-tag" onclick="switchView('seneste')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.6" width="13" height="13">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span class="chat-name">💬 Nyt tag — afventer svar</span>
+      </button>
+      <button class="sidebar-item sidebar-chat" onclick="switchView('seneste')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.6" width="13" height="13">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span class="chat-name">💬 Badeværelse — tilbud modtaget</span>
+      </button>
+      <button class="sidebar-item sidebar-chat" onclick="switchView('seneste')">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.6" width="13" height="13">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span class="chat-name">💬 Maling stue — færdig</span>
+      </button>
+
+      <!-- Footer -->
+      <div class="sidebar-footer">
+        <button class="sidebar-item sidebar-footer-item">
+          <svg viewBox="0 0 24 24" stroke="currentColor">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          Indstillinger
+        </button>
+
+        <button class="sidebar-item sidebar-footer-item">
+          <svg viewBox="0 0 24 24" stroke="currentColor">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          Support
+        </button>
+
+        <div class="sidebar-user" id="userRow">
+          <div class="sidebar-user-avatar" id="userAvatar">MH</div>
+          <span id="userName">Morten Hansen</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── MAIN AREA ── -->
+    <main class="main">
+
+      <!-- Header -->
+      <div class="main-header" id="mainHeader">
+        <button class="hamburger-btn" id="hamburgerBtn" onclick="openSidebar()" aria-label="Menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <span class="main-title" id="mainTitle">Indbakke</span>
+        <span class="step-indicator" id="stepIndicator" style="display:none;"></span>
+      </div>
+
+      <!-- ── VIEW: INDBAKKE ── -->
+      <div class="view active" id="view-indbakke">
+        <div class="indbakke-list" id="indbakkeList">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- ── THREAD VIEW (inside indbakke) ── -->
+      <div id="threadView">
+        <div class="thread-header">
+          <button class="thread-back" onclick="closeThread()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Indbakke
+          </button>
+          <div style="flex:1; padding-left: 10px;">
+            <div class="thread-title" id="threadTitle">Nyt tag — Lyngby</div>
+            <div class="thread-sub" id="threadSender">Thomas Tømrer ApS</div>
+          </div>
+        </div>
+        <div class="thread-messages" id="threadMessages">
+          <!-- Injected by JS -->
+        </div>
+        <div class="thread-input-wrap">
+          <input class="thread-input" type="text" placeholder="Skriv en besked..." id="threadInput" onkeydown="handleThreadKey(event)">
+          <button class="thread-send-btn" onclick="sendThreadMessage()" aria-label="Send">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9FE1CB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="19" x2="12" y2="5"/>
+              <polyline points="5 12 12 5 19 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── VIEW: NY OPGAVE ── -->
+      <div class="view" id="view-ny-opgave">
+        <div class="form-wrap">
+
+          <!-- Step 1 -->
+          <div class="form-step active" id="step-1">
+            <div class="form-group">
+              <label class="form-label" for="typeSelect">Hvad skal laves?</label>
+              <select class="form-control" id="typeSelect">
+                <option value="">Vælg type...</option>
+                <option value="maler">Maler</option>
+                <option value="tomrer">Tømrer</option>
+                <option value="murer">Murer</option>
+                <option value="vvs">VVS</option>
+                <option value="el">El</option>
+                <option value="tag">Tag</option>
+                <option value="gulv">Gulv</option>
+                <option value="badevarelse">Badeværelse</option>
+                <option value="kokken">Køkken</option>
+                <option value="tilbygning">Tilbygning</option>
+                <option value="anlaeg">Anlæg</option>
+                <option value="andet">Andet</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="beskrivelse">Beskriv kort hvad der skal laves</label>
+              <textarea class="form-control" id="beskrivelse" rows="3" placeholder="F.eks. Vi skal have malet hele lejligheden, 3 værelser + stue + entre. Ca. 85 kvm."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="kvm">Hvor mange kvm ca.? (valgfrit)</label>
+              <input class="form-control" type="number" id="kvm" placeholder="F.eks. 85" min="0">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="tidsramme">Hvornår skal det laves?</label>
+              <select class="form-control" id="tidsramme">
+                <option value="hurtigst">Hurtigst muligt</option>
+                <option value="1mdr">Inden 1 måned</option>
+                <option value="3mdr">Inden 3 måneder</option>
+                <option value="overslag">Bare et prisoverslag</option>
+              </select>
+            </div>
+
+            <div class="step-buttons">
+              <button class="btn-next" onclick="goToStep(2)">Næste →</button>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="form-step" id="step-2">
+            <div class="form-group">
+              <label class="form-label">Tilføj billeder <span style="font-weight:400;color:var(--muted)">(valgfrit men anbefalet)</span></label>
+              <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">Tryk for at tilføje billeder</div>
+              </div>
+              <input type="file" accept="image/*" multiple id="fileInput" style="display:none" onchange="handleFileSelect(event)">
+              <div class="photo-grid" id="photoGrid"></div>
+              <p class="upload-hint">Billeder hjælper håndværkeren med at give et mere præcist tilbud.</p>
+            </div>
+
+            <div class="step-buttons">
+              <button class="btn-back-step" onclick="goToStep(1)">← Tilbage</button>
+              <button class="btn-next" onclick="goToStep(3)">Næste →</button>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="form-step" id="step-3">
+            <div class="form-group">
+              <label class="form-label" for="postnr">Postnummer</label>
+              <input class="form-control" type="text" id="postnr" placeholder="F.eks. 2800" maxlength="4" inputmode="numeric" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="adresse">Adresse <span style="font-weight:400;color:var(--muted)">(valgfrit)</span></label>
+              <input class="form-control" type="text" id="adresse" placeholder="F.eks. Strandvejen 42">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="kontaktNavn">Dit navn</label>
+              <input class="form-control" type="text" id="kontaktNavn" placeholder="F.eks. Morten Hansen" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="kontaktTelefon">Telefon</label>
+              <input class="form-control" type="tel" id="kontaktTelefon" placeholder="F.eks. 28 12 45 67" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="kontaktEmail">Email</label>
+              <input class="form-control" type="email" id="kontaktEmail" placeholder="F.eks. morten@email.dk" required>
+            </div>
+
+            <div class="step-buttons">
+              <button class="btn-back-step" onclick="goToStep(2)">← Tilbage</button>
+              <button class="btn-next" onclick="submitOpgave()">Send min opgave</button>
+            </div>
+          </div>
+
+          <!-- Success state -->
+          <div class="success-state" id="successState">
+            <div class="success-check">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div class="success-title">Din opgave er sendt!</div>
+            <div class="success-sub">Vi finder håndværkere i dit område. Du hører fra os i din indbakke inden for 24 timer.</div>
+            <div class="success-ref">#SL-2026-0847</div>
+            <button class="success-link" onclick="resetForm()">Læg en opgave mere op</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── VIEW: SENESTE ── -->
+      <div class="view" id="view-seneste">
+        <div class="opgaver-list" id="opgaverList">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    /* ── STATE ── */
+    let currentView = 'indbakke';
+    let currentStep = 1;
+    let threadOpen = false;
+
+    /* ── DEMO DATA ── */
+    const DEMO_INDBAKKE = [
+      {
+        id: '1', taskName: 'Nyt tag — Lyngby', sender: 'Thomas Tømrer ApS',
+        preview: 'Hej Morten, jeg kan komme forbi og kigge på taget...', age: 'For 2 timer siden', unread: true,
+        messages: [
+          { text: 'Hej Morten, jeg kan komme forbi og kigge på taget i morgen kl. 10. Har du tid?', from: 'Thomas Tømrer ApS', incoming: true },
+          { text: 'Ja det passer fint. Vi ses der!', from: 'Morten Hansen', incoming: false }
+        ]
+      },
+      {
+        id: '2', taskName: 'Badeværelse — Hellerup', sender: 'VVS Eksperten',
+        preview: 'Hej, baseret på dine billeder kan jeg give et tilbud på...', age: 'For 5 timer siden', unread: true,
+        messages: [
+          { text: 'Hej, baseret på dine billeder kan jeg give et tilbud på ca. 65.000 kr. inkl. moms for totalrenovering af badeværelset.', from: 'VVS Eksperten', incoming: true }
+        ]
+      }
+    ];
+
+    const DEMO_OPGAVER = [
+      { emoji: '🏠', name: 'Nyt tag — Lyngby', date: 'Oprettet 10. jan 2026', status: 'afventer', statusText: 'Afventer svar' },
+      { emoji: '🛁', name: 'Badeværelse — Hellerup', date: 'Oprettet 8. jan 2026', status: 'tilbud', statusText: 'Tilbud modtaget' },
+      { emoji: '🎨', name: 'Maling stue — Frederiksberg', date: 'Oprettet 2. dec 2025', status: 'faerdig', statusText: 'Færdig' }
+    ];
+
+    /* ── VIEW SWITCHING ── */
+    function switchView(name) {
+      if (name === 'ny-opgave' && currentView === 'indbakke' && threadOpen) {
+        closeThread();
+      }
+
+      currentView = name;
+
+      // Hide all views
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+
+      // Update nav
+      document.querySelectorAll('.sidebar-item[id^="nav-"]').forEach(el => el.classList.remove('active'));
+
+      // Show requested view
+      const viewEl = document.getElementById('view-' + name);
+      if (viewEl) viewEl.classList.add('active');
+
+      // Update header
+      const titles = {
+        'indbakke': 'Indbakke',
+        'ny-opgave': 'Ny opgave',
+        'seneste': 'Mine opgaver'
+      };
+      document.getElementById('mainTitle').textContent = titles[name] || '';
+
+      // Step indicator
+      const stepInd = document.getElementById('stepIndicator');
+      if (name === 'ny-opgave') {
+        stepInd.style.display = 'block';
+        updateStepIndicator();
+      } else {
+        stepInd.style.display = 'none';
+      }
+
+      // Active nav item
+      const navEl = document.getElementById('nav-' + name);
+      if (navEl) navEl.classList.add('active');
+
+      closeSidebar();
+
+      // Load data
+      if (name === 'seneste') renderOpgaver();
+    }
+
+    /* ── STEP MANAGEMENT ── */
+    function goToStep(n) {
+      if (n === 2) {
+        const type = document.getElementById('typeSelect').value;
+        const desc = document.getElementById('beskrivelse').value.trim();
+        if (!type || !desc) {
+          document.getElementById(type ? 'beskrivelse' : 'typeSelect').focus();
+          return;
+        }
+      }
+      if (n === 4) { submitOpgave(); return; }
+
+      document.getElementById('step-' + currentStep).classList.remove('active');
+      currentStep = n;
+      document.getElementById('step-' + n).classList.add('active');
+      updateStepIndicator();
+
+      const formWrap = document.querySelector('.form-wrap');
+      if (formWrap) formWrap.scrollTop = 0;
+    }
+
+    function updateStepIndicator() {
+      const ind = document.getElementById('stepIndicator');
+      if (currentStep <= 3) {
+        ind.textContent = 'Trin ' + currentStep + ' af 3';
+        ind.style.display = 'block';
+      } else {
+        ind.style.display = 'none';
+      }
+    }
+
+    function submitOpgave() {
+      const postnr = document.getElementById('postnr').value.trim();
+      const navn = document.getElementById('kontaktNavn').value.trim();
+      const telefon = document.getElementById('kontaktTelefon').value.trim();
+      const email = document.getElementById('kontaktEmail').value.trim();
+
+      if (!postnr || postnr.length < 4) {
+        document.getElementById('postnr').focus();
+        return;
+      }
+      if (!navn) { document.getElementById('kontaktNavn').focus(); return; }
+      if (!telefon) { document.getElementById('kontaktTelefon').focus(); return; }
+      if (!email) { document.getElementById('kontaktEmail').focus(); return; }
+
+      // Hide form steps, show success
+      document.getElementById('step-3').classList.remove('active');
+      document.getElementById('successState').classList.add('active');
+      document.getElementById('stepIndicator').style.display = 'none';
+    }
+
+    function resetForm() {
+      document.getElementById('successState').classList.remove('active');
+      document.getElementById('typeSelect').value = '';
+      document.getElementById('beskrivelse').value = '';
+      document.getElementById('kvm').value = '';
+      document.getElementById('postnr').value = '';
+      document.getElementById('adresse').value = '';
+      document.getElementById('kontaktNavn').value = '';
+      document.getElementById('kontaktTelefon').value = '';
+      document.getElementById('kontaktEmail').value = '';
+      document.getElementById('photoGrid').innerHTML = '';
+
+      currentStep = 1;
+      document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+      document.getElementById('step-1').classList.add('active');
+
+      document.getElementById('stepIndicator').style.display = 'block';
+      updateStepIndicator();
+    }
+
+    /* ── FILE UPLOAD ── */
+    function handleFileSelect(e) {
+      const files = Array.from(e.target.files);
+      const grid = document.getElementById('photoGrid');
+      grid.innerHTML = '';
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = document.createElement('img');
+          img.className = 'photo-thumb';
+          img.src = ev.target.result;
+          img.alt = file.name;
+          grid.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    /* ── INDBAKKE ── */
+    function renderIndbakke() {
+      const el = document.getElementById('indbakkeList');
+      if (!DEMO_INDBAKKE.length) {
+        el.innerHTML = `
+          <div class="empty-indbakke">
+            <div class="empty-icon">📬</div>
+            <div class="empty-title">Ingen beskeder endnu</div>
+            <div class="empty-sub">Vi giver dig besked her, når en håndværker svarer.</div>
+          </div>`;
+        return;
+      }
+      el.innerHTML = DEMO_INDBAKKE.map(m => `
+        <div class="message-item" onclick="openThread('${escapeAttr(m.id)}')">
+          <div class="unread-dot ${m.unread ? '' : 'read'}"></div>
+          <div class="message-body">
+            <div class="message-task">${escapeHtml(m.taskName)}</div>
+            <div class="message-sender">${escapeHtml(m.sender)}</div>
+            <div class="message-preview">${escapeHtml(m.preview)}</div>
+          </div>
+          <div class="message-age">${escapeHtml(m.age)}</div>
+        </div>
+      `).join('');
+
+      // Update badge count
+      const unreadCount = DEMO_INDBAKKE.filter(m => m.unread).length;
+      const badge = document.getElementById('indbakkeBadge');
+      if (unreadCount > 0) {
+        badge.textContent = unreadCount;
+        badge.style.display = 'flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    /* ── THREAD ── */
+    function openThread(id) {
+      const msg = DEMO_INDBAKKE.find(m => m.id === String(id));
+      if (!msg) return;
+
+      // Mark as read
+      msg.unread = false;
+      renderIndbakke();
+
+      document.getElementById('threadTitle').textContent = msg.taskName;
+      document.getElementById('threadSender').textContent = msg.sender;
+
+      const threadMessages = document.getElementById('threadMessages');
+      threadMessages.innerHTML = msg.messages.map(m => `
+        <div class="thread-bubble ${m.incoming ? 'incoming' : 'outgoing'}">
+          <div class="bubble-sender">${escapeHtml(m.from)}</div>
+          ${escapeHtml(m.text)}
+        </div>
+      `).join('');
+      threadMessages.scrollTop = threadMessages.scrollHeight;
+
+      // Show thread, hide list
+      document.getElementById('indbakkeList').style.display = 'none';
+      const threadView = document.getElementById('threadView');
+      threadView.classList.add('active');
+      threadOpen = true;
+
+      // Update header
+      document.getElementById('mainTitle').textContent = msg.taskName;
+    }
+
+    function closeThread() {
+      document.getElementById('threadView').classList.remove('active');
+      document.getElementById('indbakkeList').style.display = '';
+      threadOpen = false;
+      document.getElementById('mainTitle').textContent = 'Indbakke';
+    }
+
+    function handleThreadKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendThreadMessage(); }
+    }
+
+    function sendThreadMessage() {
+      const input = document.getElementById('threadInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const threadMessages = document.getElementById('threadMessages');
+      const bubble = document.createElement('div');
+      bubble.className = 'thread-bubble outgoing';
+      bubble.innerHTML = `<div class="bubble-sender">${escapeHtml(document.getElementById('userName').textContent)}</div>${escapeHtml(text)}`;
+      threadMessages.appendChild(bubble);
+      threadMessages.scrollTop = threadMessages.scrollHeight;
+      input.value = '';
+    }
+
+    /* ── SENESTE ── */
+    function renderOpgaver() {
+      const el = document.getElementById('opgaverList');
+      el.innerHTML = DEMO_OPGAVER.map(o => `
+        <div class="opgave-item">
+          <div class="opgave-emoji">${o.emoji}</div>
+          <div class="opgave-body">
+            <div class="opgave-name">${escapeHtml(o.name)}</div>
+            <div class="opgave-date">${escapeHtml(o.date)}</div>
+          </div>
+          <span class="status-badge status-${o.status}">${escapeHtml(o.statusText)}</span>
+        </div>
+      `).join('');
+    }
+
+    /* ── SIDEBAR MOBILE ── */
+    function openSidebar() {
+      document.getElementById('sidebar').classList.add('open');
+      document.getElementById('sidebarOverlay').classList.add('visible');
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('visible');
+    }
+
+    /* ── USER INFO ── */
+    function loadUser() {
+      const name = localStorage.getItem('slate_user_name') || 'Morten Hansen';
+      const initials = name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+      document.getElementById('userAvatar').textContent = initials;
+      document.getElementById('userName').textContent = name;
+    }
+
+    /* ── HELPERS ── */
+    function escapeHtml(s) {
+      if (s == null) return '';
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function escapeAttr(s) {
+      if (s == null) return '';
+      return String(s).replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+    }
+
+    /* ── INIT ── */
+    loadUser();
+    renderIndbakke();
+  </script>
+</body>
+</html>
