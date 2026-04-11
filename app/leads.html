@@ -608,9 +608,20 @@
       const lead = allLeads.find(l => l.id === String(id));
       if (!lead) return;
 
-      const photosHtml = Array.from({ length: lead.billeder }, (_, i) => `
-        <div class="photo-placeholder">📷</div>
-      `).join('');
+      // Show real images if available, otherwise placeholders
+      let photosHtml;
+      if (lead.billedUrls && lead.billedUrls.length > 0) {
+        photosHtml = lead.billedUrls.map(url => `
+          <img src="${escapeAttr(url)}" alt="Opgavebillede" loading="lazy"
+               style="width:100px;height:100px;object-fit:cover;border-radius:8px;flex-shrink:0;cursor:pointer;"
+               onclick="window.open('${escapeAttr(url)}','_blank')"
+               onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'photo-placeholder',innerHTML:'📷'}))">
+        `).join('');
+      } else {
+        photosHtml = Array.from({ length: lead.billeder }, () => `
+          <div class="photo-placeholder">📷</div>
+        `).join('');
+      }
 
       document.getElementById('detailInner').innerHTML = `
         <button class="detail-back-link" onclick="showList()">
@@ -632,7 +643,7 @@
 
         ${lead.billeder > 0 ? `
         <div class="detail-photos">
-          <div class="detail-section-label">Billeder (${lead.billeder})</div>
+          <div class="detail-section-label">Billeder (${lead.billedUrls && lead.billedUrls.length > 0 ? lead.billedUrls.length : lead.billeder})</div>
           <div class="photos-scroll">${photosHtml}</div>
         </div>
         ` : ''}

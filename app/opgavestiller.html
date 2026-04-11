@@ -919,8 +919,10 @@
               <div class="upload-area" onclick="document.getElementById('fileInput').click()">
                 <div class="upload-icon">📷</div>
                 <div class="upload-text">Tryk for at tilføje billeder</div>
+                <div style="font-size:11px;color:var(--muted);">JPG, PNG, WebP · max 5 MB · op til 10 billeder</div>
               </div>
-              <input type="file" accept="image/*" multiple id="fileInput" style="display:none" onchange="handleFileSelect(event)">
+              <input type="file" accept="image/jpeg,image/png,image/webp" multiple id="fileInput" style="display:none" onchange="handleFileSelect(event)">
+              <p id="uploadCount" style="font-size:12px;color:var(--primary);margin-top:6px;font-weight:500;"></p>
               <div class="photo-grid" id="photoGrid"></div>
               <p class="upload-hint">Billeder hjælper håndværkeren med at give et mere præcist tilbud.</p>
             </div>
@@ -995,6 +997,7 @@
     let currentView = 'indbakke';
     let currentStep = 1;
     let threadOpen = false;
+    let selectedFiles = []; // files staged for upload
 
     /* ── DEMO DATA ── */
     const DEMO_INDBAKKE = [
@@ -1129,6 +1132,9 @@
       document.getElementById('kontaktTelefon').value = '';
       document.getElementById('kontaktEmail').value = '';
       document.getElementById('photoGrid').innerHTML = '';
+      const countEl = document.getElementById('uploadCount');
+      if (countEl) countEl.textContent = '';
+      selectedFiles = [];
 
       currentStep = 1;
       document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
@@ -1139,21 +1145,109 @@
     }
 
     /* ── FILE UPLOAD ── */
+    const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    const MAX_FILES = 10;
+    const MAX_SIZE = 5 * 1024 * 1024;
+
     function handleFileSelect(e) {
-      const files = Array.from(e.target.files);
+      const incoming = Array.from(e.target.files);
+      e.target.value = ''; // reset so same file can be selected again
+
+      const errors = [];
+      for (const file of incoming) {
+        if (selectedFiles.length >= MAX_FILES) {
+          errors.push(`Max ${MAX_FILES} billeder i alt`);
+          break;
+        }
+        if (!ALLOWED_TYPES.includes(file.type.toLowerCase())) {
+          errors.push(`${file.name}: Kun JPG, PNG og WebP er tilladt`);
+          continue;
+        }
+        if (file.size > MAX_SIZE) {
+          errors.push(`${file.name}: For stor — max 5 MB`);
+          continue;
+        }
+        selectedFiles.push(file);
+      }
+
+      if (errors.length) {
+        const uploadArea = document.querySelector('.upload-area');
+        const errEl = uploadArea.parentNode.querySelector('.upload-error') || (() => {
+          const d = document.createElement('p');
+          d.className = 'upload-error';
+          d.style.cssText = 'color:#C0392B;font-size:12px;margin-top:8px;';
+          uploadArea.parentNode.insertBefore(d, uploadArea.nextSibling);
+          return d;
+        })();
+        errEl.textContent = errors.join(' · ');
+        setTimeout(() => { errEl.textContent = ''; }, 5000);
+      }
+
+      renderPhotoPreviews();
+    }
+
+    function renderPhotoPreviews() {
       const grid = document.getElementById('photoGrid');
       grid.innerHTML = '';
-      files.forEach(file => {
+      selectedFiles.forEach((file, idx) => {
         const reader = new FileReader();
         reader.onload = (ev) => {
+          const wrapper = document.createElement('div');
+          wrapper.style.cssText = 'position:relative;display:inline-block;';
+
           const img = document.createElement('img');
           img.className = 'photo-thumb';
           img.src = ev.target.result;
           img.alt = file.name;
-          grid.appendChild(img);
+
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.textContent = '×';
+          btn.style.cssText = 'position:absolute;top:4px;right:4px;background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:13px;line-height:1;padding:0;display:flex;align-items:center;justify-content:center;';
+          btn.onclick = () => {
+            selectedFiles.splice(idx, 1);
+            renderPhotoPreviews();
+          };
+
+          wrapper.appendChild(img);
+          wrapper.appendChild(btn);
+          grid.appendChild(wrapper);
         };
         reader.readAsDataURL(file);
       });
+
+      // Update upload area count label
+      const countLabel = document.getElementById('uploadCount');
+      if (countLabel) countLabel.textContent = selectedFiles.length > 0 ? `${selectedFiles.length} billede${selectedFiles.length > 1 ? 'r' : ''} valgt` : '';
+    }
+
+    /* ── FILE → BASE64 ── */
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    /* ── UPLOAD FILES ── */
+    async function uploadFiles(files, leadId) {
+      const urls = [];
+      for (const file of files) {
+        try {
+          const base64 = await fileToBase64(file);
+          const res = await apiFetch('/api/upload', {
+            method: 'POST',
+            body: JSON.stringify({ data: base64, contentType: file.type, name: file.name, leadId })
+          });
+          if (res.ok) {
+            const json = await res.json();
+            if (json.url) urls.push(json.url);
+          }
+        } catch (e) { /* skip failed upload */ }
+      }
+      return urls;
     }
 
     /* ── INDBAKKE ── */
@@ -1377,7 +1471,7 @@
 
       const userId = getUserId();
       const sendBtn = document.querySelector('#step-3 .btn-next');
-      if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = 'Sender...'; }
+      if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = 'Opretter opgave...'; }
 
       const payload = {
         opgavestiller_id: userId,
@@ -1392,12 +1486,29 @@
       };
 
       try {
+        // 1. Opret lead
         const res = await apiFetch('/api/leads', {
           method: 'POST',
           body: JSON.stringify(payload)
         });
         if (!res.ok) throw new Error('API fejl');
         const lead = await res.json();
+
+        // 2. Upload billeder (if any)
+        if (selectedFiles.length > 0 && lead.id) {
+          if (sendBtn) sendBtn.textContent = `Uploader ${selectedFiles.length} billede${selectedFiles.length > 1 ? 'r' : ''}...`;
+          const urls = await uploadFiles(selectedFiles, lead.id);
+
+          // 3. Patch lead med billed-URLs
+          if (urls.length > 0) {
+            await apiFetch(`/api/leads?id=${lead.id}`, {
+              method: 'PATCH',
+              body: JSON.stringify({ billeder: urls })
+            });
+          }
+        }
+
+        selectedFiles = [];
         const ref = `#SL-${new Date().getFullYear()}-${Math.floor(Math.random()*9000+1000)}`;
         document.getElementById('step-3').classList.remove('active');
         const ss = document.getElementById('successState');
@@ -1405,7 +1516,8 @@
         ss.classList.add('active');
         document.getElementById('stepIndicator').style.display = 'none';
       } catch(e) {
-        // Still show success (graceful degradation)
+        // Graceful degradation: vis success selv ved fejl
+        selectedFiles = [];
         document.getElementById('step-3').classList.remove('active');
         document.getElementById('successState').classList.add('active');
         document.getElementById('stepIndicator').style.display = 'none';
