@@ -285,13 +285,6 @@
     }
 
     .center-logo {
-      width: 44px;
-      height: 44px;
-      background: var(--dark);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       margin-bottom: 4px;
     }
 
@@ -452,14 +445,25 @@
     .onboarding.visible { display: flex; }
 
     .ob-logo {
-      width: 52px;
-      height: 52px;
-      background: var(--dark);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       margin-bottom: 24px;
+    }
+
+    .ob-logo img {
+      height: 80px;
+      width: auto;
+      max-width: 240px;
+      object-fit: contain;
+    }
+
+    .sidebar-logo {
+      padding: 6px 8px 10px;
+    }
+
+    .sidebar-logo img {
+      height: 30px;
+      width: auto;
+      max-width: 160px;
+      object-fit: contain;
     }
 
     .ob-title {
@@ -532,11 +536,7 @@
   <!-- ── ONBOARDING ── -->
   <div class="onboarding" id="onboarding">
     <div class="ob-logo">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9FE1CB" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-        <polyline points="2 17 12 22 22 17"/>
-        <polyline points="2 12 12 17 22 12"/>
-      </svg>
+      <img src="/icons/slate-logo.png" alt="Slate">
     </div>
     <h1 class="ob-title">Velkommen til Slate</h1>
     <p class="ob-sub">Hvad passer bedst p&aring; dig?</p>
@@ -564,6 +564,11 @@
 
     <!-- ── SIDEBAR ── -->
     <aside class="sidebar" id="sidebar">
+
+      <!-- Logo -->
+      <div class="sidebar-logo">
+        <img src="/icons/slate-logo.png" alt="Slate">
+      </div>
 
       <!-- Ny samtale -->
       <button class="sidebar-item sidebar-new" data-nav="ny" onclick="navigateTo('ny')">
@@ -682,11 +687,7 @@
 
       <div class="main-center">
         <div class="center-logo">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9FE1CB" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-            <polyline points="2 17 12 22 22 17"/>
-            <polyline points="2 12 12 17 22 12"/>
-          </svg>
+          <img src="/icons/slate-logo.png" alt="Slate" style="height:56px;width:auto;object-fit:contain;">
         </div>
         <h1 class="center-heading">Hvad kan jeg hj&aelig;lpe med?</h1>
         <p class="center-sub">Beskriv din opgave, s&aring; finder jeg tallene.</p>

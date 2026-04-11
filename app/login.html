@@ -54,28 +54,15 @@
     /* Logo */
     .logo-wrap {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
+      justify-content: center;
       margin-bottom: 28px;
     }
 
-    .logo-circle {
-      width: 44px;
-      height: 44px;
-      background: var(--dark);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .logo-name {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: -0.3px;
+    .logo-img {
+      height: 72px;
+      width: auto;
+      max-width: 220px;
+      object-fit: contain;
     }
 
     /* Tabs */
@@ -335,14 +322,7 @@
 
   <!-- Logo -->
   <div class="logo-wrap">
-    <div class="logo-circle">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="4" y="14" width="16" height="3" rx="1.5" fill="#9FE1CB"/>
-        <rect x="4" y="9" width="16" height="3" rx="1.5" fill="#1D9E75" opacity="0.8"/>
-        <rect x="4" y="4" width="16" height="3" rx="1.5" fill="#9FE1CB" opacity="0.5"/>
-      </svg>
-    </div>
-    <span class="logo-name">Slate</span>
+    <img src="/icons/slate-logo.png" alt="Slate" class="logo-img">
   </div>
 
   <!-- Tabs (hidden during reset) -->
