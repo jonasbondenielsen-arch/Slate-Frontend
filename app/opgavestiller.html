@@ -1415,7 +1415,7 @@
       if (!userId) return;
       try {
         // Get leads for this user that have been matched (someone messaged them)
-        const leadsRes = await apiFetch(`/api/leads?opgavestiller_id=${userId}`);
+        const leadsRes = await apiFetch(`/api/data?resource=leads&opgavestiller_id=${userId}`);
         if (!leadsRes.ok) throw new Error();
         const leadsData = await leadsRes.json();
         const leads = leadsData.leads || leadsData || [];
@@ -1424,7 +1424,7 @@
         const indbakke = await Promise.all(
           leads.filter(l => l.matchet_mester_id || l.status !== 'ny').map(async lead => {
             try {
-              const msgRes = await apiFetch(`/api/messages?lead_id=${lead.id}&sender_type=opgavestiller`);
+              const msgRes = await apiFetch(`/api/data?resource=messages&lead_id=${lead.id}&sender_type=opgavestiller`);
               const msgData = msgRes.ok ? await msgRes.json() : { messages: [], unread: 0 };
               const msgs = msgData.messages || [];
               const latest = msgs[msgs.length - 1];
@@ -1490,7 +1490,7 @@
 
       try {
         // 1. Opret lead
-        const res = await apiFetch('/api/leads', {
+        const res = await apiFetch('/api/data?resource=leads', {
           method: 'POST',
           body: JSON.stringify(payload)
         });
@@ -1504,7 +1504,7 @@
 
           // 3. Patch lead med billed-URLs
           if (urls.length > 0) {
-            await apiFetch(`/api/leads?id=${lead.id}`, {
+            await apiFetch(`/api/data?resource=leads&id=${lead.id}`, {
               method: 'PATCH',
               body: JSON.stringify({ billeder: urls })
             });
@@ -1534,7 +1534,7 @@
       const userId = getUserId();
       if (!userId) { renderOpgaver(); return; }
       try {
-        const res = await apiFetch(`/api/leads?opgavestiller_id=${userId}`);
+        const res = await apiFetch(`/api/data?resource=leads&opgavestiller_id=${userId}`);
         if (!res.ok) throw new Error();
         const data = await res.json();
         const leads = (data.leads || data || []);
@@ -1603,7 +1603,7 @@
 
       if (currentThreadLeadId && userId) {
         try {
-          await apiFetch('/api/messages', {
+          await apiFetch('/api/data?resource=messages', {
             method: 'POST',
             body: JSON.stringify({ lead_id: currentThreadLeadId, sender_id: userId, sender_type: 'opgavestiller', besked: text })
           });
@@ -1627,7 +1627,7 @@
 
       // Try to load real messages
       try {
-        const res = await apiFetch(`/api/messages?lead_id=${id}&sender_type=opgavestiller`);
+        const res = await apiFetch(`/api/data?resource=messages&lead_id=${id}&sender_type=opgavestiller`);
         const data = res.ok ? await res.json() : { messages: [] };
         const msgs = data.messages || [];
         threadMessages.innerHTML = msgs.map(m => {

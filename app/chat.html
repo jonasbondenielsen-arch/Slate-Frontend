@@ -542,7 +542,7 @@
       let sager = [];
       if (firmId) {
         try {
-          const res = await fetch(`/api/projects?firm_id=${firmId}&needs_efterkalk=true`);
+          const res = await fetch(`/api/data?resource=projects&firm_id=${firmId}&needs_efterkalk=true`);
           const data = await res.json();
           sager = data.projects || [];
         } catch(e) { sager = getDemoEfterkalkSager(); }

@@ -775,7 +775,7 @@
       // Try new sager API first (authenticated users)
       if (userId) {
         try {
-          const res = await apiFetch(`/api/sager?mester_id=${userId}`);
+          const res = await apiFetch(`/api/data?resource=sager&mester_id=${userId}`);
           if (res.ok) {
             const data = await res.json();
             const list = (data.sager || []).map(s => ({ id: s.id, sagsnavn: s.sagsnavn, status: s.status }));
@@ -787,7 +787,7 @@
       // Fall back to old projects API
       if (firmId) {
         try {
-          const res = await fetch(`/api/projects?firm_id=${firmId}`);
+          const res = await fetch(`/api/data?resource=projects&firm_id=${firmId}`);
           const data = await res.json();
           if ((data.projects || []).length) { renderSidebarChats(data.projects); return; }
         } catch(e) {}

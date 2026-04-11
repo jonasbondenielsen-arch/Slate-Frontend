@@ -247,7 +247,7 @@
 
       // Try server
       try {
-        await fetch('/api/firm', {
+        await fetch('/api/data?resource=firm', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)

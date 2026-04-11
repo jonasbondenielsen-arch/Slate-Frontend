@@ -533,7 +533,7 @@
     async function loadLeads() {
       if (!getToken()) { window.location.replace('/app/login.html'); return; }
       try {
-        const res = await apiFetch('/api/leads?status=ny');
+        const res = await apiFetch('/api/data?resource=leads&status=ny');
         if (!res.ok) throw new Error('not ok');
         const data = await res.json();
         const raw = data.leads || data || [];
@@ -735,12 +735,12 @@
 
       try {
         // Update lead status + matchet_mester_id
-        await apiFetch(`/api/leads?id=${leadId}`, {
+        await apiFetch(`/api/data?resource=leads&id=${leadId}`, {
           method: 'PATCH',
           body: JSON.stringify({ status: 'matchet', matchet_mester_id: userId })
         });
         // Send first message
-        await apiFetch('/api/messages', {
+        await apiFetch('/api/data?resource=messages', {
           method: 'POST',
           body: JSON.stringify({
             lead_id: leadId,

@@ -328,7 +328,7 @@
       localStorage.setItem('slate_prices', JSON.stringify(data));
 
       try {
-        await fetch('/api/standards', {
+        await fetch('/api/data?resource=standards', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
