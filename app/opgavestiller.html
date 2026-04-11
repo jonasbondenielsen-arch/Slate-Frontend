@@ -770,30 +770,15 @@
           <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
         </svg>
         Indbakke
-        <span class="badge-unread" id="indbakkeBadge">2</span>
+        <span class="badge-unread" id="indbakkeBadge" style="display:none"></span>
       </button>
 
       <!-- Seneste -->
       <div class="sidebar-label">Seneste</div>
 
-      <button class="sidebar-item sidebar-chat" id="nav-chat-tag" onclick="switchView('seneste')">
-        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.6" width="13" height="13">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
-        <span class="chat-name">💬 Nyt tag — afventer svar</span>
-      </button>
-      <button class="sidebar-item sidebar-chat" onclick="switchView('seneste')">
-        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.6" width="13" height="13">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
-        <span class="chat-name">💬 Badeværelse — tilbud modtaget</span>
-      </button>
-      <button class="sidebar-item sidebar-chat" onclick="switchView('seneste')">
-        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.6" width="13" height="13">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
-        <span class="chat-name">💬 Maling stue — færdig</span>
-      </button>
+      <div class="sidebar-chats" id="sidebarOpgaver">
+        <!-- Injected by JS -->
+      </div>
 
       <!-- Footer -->
       <div class="sidebar-footer">
@@ -1077,8 +1062,9 @@
 
       closeSidebar();
 
-      // Load data
-      if (name === 'seneste') renderOpgaver();
+      // Load data for view
+      if (name === 'seneste') loadOpgaver();
+      if (name === 'indbakke') loadIndbakke();
     }
 
     /* ── STEP MANAGEMENT ── */
@@ -1173,18 +1159,20 @@
     /* ── INDBAKKE ── */
     function renderIndbakke() {
       const el = document.getElementById('indbakkeList');
-      if (!DEMO_INDBAKKE.length) {
+      const data = allIndbakke;
+      if (!data.length) {
         el.innerHTML = `
           <div class="empty-indbakke">
             <div class="empty-icon">📬</div>
             <div class="empty-title">Ingen beskeder endnu</div>
             <div class="empty-sub">Vi giver dig besked her, når en håndværker svarer.</div>
           </div>`;
+        document.getElementById('indbakkeBadge').style.display = 'none';
         return;
       }
-      el.innerHTML = DEMO_INDBAKKE.map(m => `
+      el.innerHTML = data.map(m => `
         <div class="message-item" onclick="openThread('${escapeAttr(m.id)}')">
-          <div class="unread-dot ${m.unread ? '' : 'read'}"></div>
+          <div class="unread-dot ${(m.unread && m.unread > 0) ? '' : 'read'}"></div>
           <div class="message-body">
             <div class="message-task">${escapeHtml(m.taskName)}</div>
             <div class="message-sender">${escapeHtml(m.sender)}</div>
@@ -1195,7 +1183,7 @@
       `).join('');
 
       // Update badge count
-      const unreadCount = DEMO_INDBAKKE.filter(m => m.unread).length;
+      const unreadCount = data.reduce((sum, m) => sum + (m.unread || 0), 0);
       const badge = document.getElementById('indbakkeBadge');
       if (unreadCount > 0) {
         badge.textContent = unreadCount;
@@ -1436,6 +1424,7 @@
         const data = await res.json();
         const leads = (data.leads || data || []);
         if (leads.length) {
+          renderSidebarOpgaver(leads);
           const STATUS_MAP = { ny: { text: 'Oprettet', cls: 'oprettet' }, matchet: { text: 'Afventer svar', cls: 'afventer' }, tilbud_modtaget: { text: 'Tilbud modtaget', cls: 'tilbud' }, igangsat: { text: 'Igangsat', cls: 'igangsat' }, faerdig: { text: 'Færdig', cls: 'faerdig' } };
           const EMOJI_MAP = { tag: '🏠', maler: '🎨', badevaerelse: '🛁', koekken: '🍳', toemrer: '🪚', vvs: '🔧', el: '⚡', andet: '📋' };
           const el = document.getElementById('opgaverList');
@@ -1456,6 +1445,27 @@
         }
       } catch(e) {}
       renderOpgaver();
+    }
+
+    /* ── SIDEBAR OPGAVER LIST ── */
+    function renderSidebarOpgaver(leads) {
+      const el = document.getElementById('sidebarOpgaver');
+      if (!el) return;
+      const EMOJI_MAP = { tag: '🏠', maler: '🎨', badevaerelse: '🛁', koekken: '🍳', toemrer: '🪚', vvs: '🔧', el: '⚡', andet: '📋' };
+      if (!leads || !leads.length) {
+        el.innerHTML = '<div style="padding:8px 12px;font-size:12px;color:var(--muted);">Ingen opgaver endnu</div>';
+        return;
+      }
+      el.innerHTML = leads.slice(0, 8).map(l => {
+        const emoji = EMOJI_MAP[l.opgavetype] || '📋';
+        const name = l.beskrivelse ? l.beskrivelse.slice(0, 28) + (l.beskrivelse.length > 28 ? '...' : '') : (l.opgavetype || 'Opgave');
+        return `<button class="sidebar-item sidebar-chat" onclick="switchView('seneste')">
+          <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.6" width="13" height="13">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span class="chat-name">${emoji} ${escapeHtml(name)}</span>
+        </button>`;
+      }).join('');
     }
 
     /* ── REAL SEND THREAD MESSAGE ── */
@@ -1523,19 +1533,12 @@
       document.getElementById('mainTitle').textContent = msg.taskName;
     }
 
-    /* ── UPDATED switchView to load real data ── */
-    const _switchView = switchView;
-    function switchView(name) {
-      _switchView(name);
-      if (name === 'seneste') loadOpgaver();
-      if (name === 'indbakke') loadIndbakke();
-    }
-
     /* ── INIT ── */
     (function() {
       if (!getToken()) { window.location.replace('/app/login.html'); return; }
       loadUser();
       loadIndbakke();
+      loadOpgaver(); // populate sidebar
     })();
   </script>
 </body>

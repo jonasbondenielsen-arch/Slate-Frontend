@@ -38,7 +38,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { opgavestiller_id, opgavetype, beskrivelse, kvm, tidsramme, postnummer, adresse, billeder } = req.body;
+    const { opgavestiller_id, opgavetype, beskrivelse, kvm, tidsramme, postnummer, adresse, billeder, navn, telefon, email } = req.body;
     if (!opgavestiller_id || !opgavetype) {
       return res.status(400).json({ error: 'Mangler opgavestiller_id eller opgavetype' });
     }
@@ -54,6 +54,9 @@ export default async function handler(req, res) {
         postnummer: postnummer || null,
         adresse: adresse || null,
         billeder: billeder || [],
+        navn: navn || null,
+        telefon: telefon || null,
+        email: email || null,
         status: 'ny'
       })
     });
