@@ -21,8 +21,8 @@ const sharp = require('sharp');
 const path  = require('path');
 const fs    = require('fs');
 
-const SRC   = path.join(__dirname, '../public/icons/source-logo.png');
-const OUT   = path.join(__dirname, '../public/icons');
+const SRC   = path.join(__dirname, '../icons/source-logo.png');
+const OUT   = path.join(__dirname, '../icons');
 const BG    = { r: 44, g: 44, b: 42, alpha: 1 };   // #2C2C2A
 const PAD   = 0.16;                                  // 16 % padding around symbol
 
