@@ -439,7 +439,7 @@
     <aside class="sidebar" id="sidebar">
 
       <!-- Ny samtale -->
-      <button class="sidebar-item sidebar-new" onclick="navigateTo('chat')">
+      <button class="sidebar-item sidebar-new" data-nav="ny" onclick="navigateTo('ny')">
         <svg viewBox="0 0 24 24" stroke="currentColor">
           <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
         </svg>
@@ -449,7 +449,7 @@
       <!-- Værktøjer -->
       <div class="sidebar-label">Værktøjer</div>
 
-      <button class="sidebar-item active" onclick="navigateTo('chat')">
+      <button class="sidebar-item active" data-nav="tilbud" onclick="navigateTo('tilbud')">
         <svg viewBox="0 0 24 24" stroke="currentColor" class="icon-tilbud">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
           <polyline points="14 2 14 8 20 8"/>
@@ -459,7 +459,7 @@
         Nyt tilbud
       </button>
 
-      <button class="sidebar-item" onclick="navigateTo('chat')">
+      <button class="sidebar-item" data-nav="efterkalk" onclick="navigateTo('efterkalk')">
         <svg viewBox="0 0 24 24" stroke="currentColor" class="icon-efterkalk">
           <line x1="18" y1="20" x2="18" y2="10"/>
           <line x1="12" y1="20" x2="12" y2="4"/>
@@ -583,11 +583,15 @@
     /* ── NAVIGATION ── */
     function navigateTo(screen) {
       const routes = {
-        chat:      '/app/chat.html',
-        dashboard: '/app/dashboard.html',
-        images:    '/app/images.html',
-        settings:  '/app/settings.html',
-        templates: '/app/chat.html'
+        ny:         '/app/chat.html',
+        tilbud:     '/app/chat.html?mode=tilbud',
+        efterkalk:  '/app/chat.html?mode=efterkalk',
+        dashboard:  '/app/dashboard.html',
+        images:     '/app/images.html',
+        settings:   '/app/settings.html',
+        // legacy
+        chat:       '/app/chat.html',
+        templates:  '/app/chat.html'
       };
       window.location.href = routes[screen] || '/app/chat.html';
     }

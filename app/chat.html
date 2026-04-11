@@ -262,6 +262,87 @@
       30% { opacity: 1; transform: scale(1.1); }
     }
 
+    /* EFTERKALK LIST */
+    .efterkalk-screen {
+      display: flex;
+      flex-direction: column;
+      padding: 20px 16px 12px;
+      gap: 6px;
+    }
+
+    .efterkalk-heading {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+
+    .efterkalk-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 13px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.13s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+
+    .efterkalk-item:hover { background: var(--bg-2); transform: translateY(-1px); }
+    .efterkalk-item:active { transform: scale(0.98); }
+
+    .efterkalk-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--lilla-light);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--lilla);
+      flex-shrink: 0;
+    }
+
+    .efterkalk-info { flex: 1; min-width: 0; }
+
+    .efterkalk-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .efterkalk-meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .efterkalk-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
+    .efterkalk-amount {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .efterkalk-date {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
     /* INPUT BAR */
     .input-bar {
       background: rgba(255,255,255,0.97);
@@ -409,21 +490,16 @@
   </div>
 
   <script>
-    const WELCOME_MSG = "Hej mester! 👋 Hvad skal vi i gang med? Du kan starte et nyt tilbud, køre en efterkalkulation — eller bare skrive løs, så finder jeg ud af det.";
-
     const params = new URLSearchParams(window.location.search);
     const projectId = params.get('project');
-    const mode = params.get('mode');
+    const mode = params.get('mode'); // 'tilbud' | 'efterkalk' | null
 
     let messages = [];
     let chatHistory = messages;
 
     function getOrCreateSessionId() {
       let id = sessionStorage.getItem('slate_session_id');
-      if (!id) {
-        id = crypto.randomUUID();
-        sessionStorage.setItem('slate_session_id', id);
-      }
+      if (!id) { id = crypto.randomUUID(); sessionStorage.setItem('slate_session_id', id); }
       return id;
     }
 
@@ -434,16 +510,101 @@
     const input = document.getElementById('chatInput');
     const sendBtn = document.getElementById('sendBtn');
 
-    // If project opened or mode set, hide welcome and show initial assistant msg
-    if (projectId || mode) {
+    /* ── MODE: NYTTILBUD ── */
+    if (mode === 'tilbud') {
       welcomeScreen.style.display = 'none';
-      const initText = mode === 'forslag'
-        ? "Her er mine 3 forslag til jer baseret på jeres data:\n\n1. **Hæv materialetillæg** på tømrerarbejde fra 15% til 18% — I er i underkant ift. markedet.\n2. **Opfølgning på 3 tilbud** fra april — ingen respons endnu. Vil I have en reminder-tekst?\n3. **Badeværelse-prisen** er steget 8% i Q1. Jeres skabelon bør opdateres."
-        : "God dag mester! 👷 Jeg har hentet sagen. Hvad vil du gerne arbejde med?";
-      appendMessage('assistant', initText);
+      setTimeout(() => {
+        appendMessage('assistant', 'Fortæl mig om opgaven, mester \u2014 kunde, type, adresse, st\u00f8rrelse, \u00f8nsker. Bare fyr l\u00f8s.');
+        input.focus();
+      }, 120);
+
+    /* ── MODE: EFTERKALKULATION ── */
+    } else if (mode === 'efterkalk') {
+      welcomeScreen.style.display = 'none';
+      loadEfterkalkSager();
+
+    /* ── MODE: ÅBEN SAG ── */
+    } else if (projectId) {
+      welcomeScreen.style.display = 'none';
+      appendMessage('assistant', 'God dag mester! \ud83d\udc77 Jeg har hentet sagen. Hvad vil du gerne arbejde med?');
+
+    /* ── DEFAULT: NY SAMTALE ── */
     } else {
-      // Show welcome message after short delay
-      setTimeout(() => appendMessage('assistant', WELCOME_MSG), 400);
+      setTimeout(() => appendMessage('assistant', 'Hej mester! \ud83d\udc4b Hvad skal vi i gang med? Du kan starte et nyt tilbud, k\u00f8re en efterkalkulation \u2014 eller bare skrive l\u00f8s, s\u00e5 finder jeg ud af det.'), 400);
+    }
+
+    /* ── EFTERKALK: hent sager ── */
+    async function loadEfterkalkSager() {
+      const firmId = localStorage.getItem('slate_firm_id');
+      let sager = [];
+      if (firmId) {
+        try {
+          const res = await fetch(`/api/projects?firm_id=${firmId}&needs_efterkalk=true`);
+          const data = await res.json();
+          sager = data.projects || [];
+        } catch(e) { sager = getDemoEfterkalkSager(); }
+      } else {
+        sager = getDemoEfterkalkSager();
+      }
+      renderEfterkalkListe(sager);
+    }
+
+    function getDemoEfterkalkSager() {
+      return [
+        { id: '1', sagsnavn: 'Tagudskiftning Holte',             meta: 'Tagd\u00e6kning \u00b7 180 kvm', beloeb: '312.500 kr', dato: '12. apr' },
+        { id: '2', sagsnavn: 'Badeværelse Hellerup \u2014 M\u00f8ller', meta: 'VVS \u00b7 9 kvm',          beloeb: '87.500 kr',  dato: '11. apr' },
+        { id: '3', sagsnavn: 'Facade maling Gentofte',            meta: 'Maler',                beloeb: '64.000 kr',  dato: '8. apr'  },
+      ];
+    }
+
+    function renderEfterkalkListe(sager) {
+      if (!sager.length) {
+        const el = document.createElement('div');
+        el.className = 'msg assistant';
+        el.style.marginTop = '20px';
+        el.textContent = 'Alle dine sager er efterkalkuleret, mester. Godt gået! 👏';
+        container.appendChild(el);
+        return;
+      }
+
+      const screen = document.createElement('div');
+      screen.className = 'efterkalk-screen';
+      screen.innerHTML = `<div class="efterkalk-heading">Sager der mangler efterkalkulation</div>` +
+        sager.map(s => `
+          <button class="efterkalk-item" onclick="startEfterkalk(${JSON.stringify(s).replace(/"/g,'&quot;')})">
+            <div class="efterkalk-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+              </svg>
+            </div>
+            <div class="efterkalk-info">
+              <div class="efterkalk-name">${escapeHtml(s.sagsnavn)}</div>
+              ${s.meta ? `<div class="efterkalk-meta">${escapeHtml(s.meta)}</div>` : ''}
+            </div>
+            <div class="efterkalk-right">
+              ${s.beloeb ? `<div class="efterkalk-amount">${escapeHtml(s.beloeb)}</div>` : ''}
+              ${s.dato ? `<div class="efterkalk-date">${escapeHtml(s.dato)}</div>` : ''}
+            </div>
+          </button>
+        `).join('');
+      container.appendChild(screen);
+    }
+
+    function startEfterkalk(sag) {
+      // Fjern listeskærmen
+      const screen = container.querySelector('.efterkalk-screen');
+      if (screen) screen.remove();
+
+      const navn = sag.sagsnavn || 'sagen';
+      const beloeb = sag.beloeb ? ` til ${sag.beloeb}` : '';
+      // Forkortet sagsnavn til besked (første ord i adressen)
+      const kortNavn = navn.split(' ')[0] + (navn.includes('\u2014') ? navn.split('\u2014')[0].trim().split(' ').slice(-1)[0] : '');
+      appendMessage('assistant', `${navn.split(' \u2014')[0].trim()}-sagen${beloeb} \u2014 er den f\u00e6rdig nu? Fyr l\u00f8s med hvad det endte p\u00e5 i materialer og timer.`);
+      input.focus();
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     function startWithAction(action) {
@@ -451,16 +612,16 @@
       const texts = {
         'nyt-tilbud': 'Nyt tilbud',
         'efterkalkulation': 'Efterkalkulation',
-        'billeder': 'Tilføj referencebilleder'
+        'billeder': 'Tilf\u00f8j referencebilleder'
       };
       appendMessage('user', texts[action] || action);
       showTyping();
       setTimeout(() => {
         removeTyping();
         const replies = {
-          'nyt-tilbud': 'Super! 📋 Hvad er det for en type opgave? Tømrer, VVS, el, maling, tagdækning — eller noget andet?',
-          'efterkalkulation': 'OK — vi kigger på hvad der gik. Hvilken sag eller periode vil du efterkalkulere?',
-          'billeder': 'Send gerne billederne, så analyserer jeg dem og finder relevante referencer fra jeres historik.'
+          'nyt-tilbud': 'Super! \ud83d\udccb Hvad er det for en type opgave? T\u00f8mrer, VVS, el, maling, tagd\u00e6kning \u2014 eller noget andet?',
+          'efterkalkulation': 'OK \u2014 vi kigger p\u00e5 hvad der gik. Hvilken sag eller periode vil du efterkalkulere?',
+          'billeder': 'Send gerne billederne, s\u00e5 analyserer jeg dem og finder relevante referencer fra jeres historik.'
         };
         appendMessage('assistant', replies[action] || 'Hvad vil du gerne?');
       }, 1200);
