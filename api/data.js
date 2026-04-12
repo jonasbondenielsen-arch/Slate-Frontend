@@ -40,8 +40,22 @@ export default async function handler(req, res) {
         return res.json({ leads: await r.json() });
       }
       if (status) {
-        const r = await sb(`leads?status=eq.${status}&order=created_at.desc`);
-        return res.json({ leads: await r.json() });
+        const limitVal = Math.min(parseInt(query.limit) || 50, 100);
+        const r = await sb(`leads?status=eq.${status}&order=created_at.desc&limit=${limitVal}`);
+        const data = await r.json();
+        // ?public=true — strip all contact data for public-facing feed
+        if (query.public === 'true') {
+          return res.json({ leads: data.map(l => ({
+            id: l.id,
+            opgavetype: l.opgavetype,
+            postnummer: l.postnummer,
+            kvm: l.kvm,
+            tidsramme: l.tidsramme,
+            billeder: Array.isArray(l.billeder) ? l.billeder : [],
+            created_at: l.created_at
+          })) });
+        }
+        return res.json({ leads: data });
       }
       return res.status(400).json({ error: 'Mangler id, opgavestiller_id eller status' });
     }
